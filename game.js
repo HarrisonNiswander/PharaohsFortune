@@ -11,11 +11,14 @@ const ctx = canvas.getContext('2d');
 //
 const STATES = { 
     MENU: 'menu', 
+    NUM_PLAYER: 'number of players', 
+    INSTRUCTIONS: 'instructions',
     PLAYING: 'playing', 
     GAMEOVER: 'gameover' 
 }; 
 
 let currentState = STATES.MENU; 
+let multiplayer = false;
 
 //
 //-----------------------------------GAME VARIABLES-----------------------------------
@@ -35,13 +38,13 @@ function changeState(newState) {
     
     if (newState === STATES.PLAYING) { 
         resetGame(); 
-        //bgm.play().catch(() => {});
+        
         
     } 
     
     if (newState === STATES.GAMEOVER) { 
         highScore = Math.max(highScore, Math.floor(score)); 
-        //bgm.pause();    //stop music when game over
+        
     } 
 } 
     
@@ -53,9 +56,9 @@ document.addEventListener('keydown', (e) => {
         e.preventDefault(); 
         
         if (currentState === STATES.MENU) { 
-            changeState(STATES.PLAYING); 
+            changeState(STATES.NUM_PLAYER); 
             return; 
-        } 
+        }  
     
         if (currentState === STATES.PLAYING) { 
             return; 
@@ -69,6 +72,27 @@ document.addEventListener('keydown', (e) => {
 
     } 
 
+    if (e.code === 'Digit1') { 
+        e.preventDefault(); 
+
+        if (currentState === STATES.NUM_PLAYER) { 
+            multiplayer = false;
+            changeState(STATES.INSTRUCTIONS); 
+            return; 
+        }
+
+    }
+
+    if (e.code === 'Digit2') { 
+        e.preventDefault(); 
+
+        if (currentState === STATES.NUM_PLAYER) { 
+            multiplayer = true;
+            changeState(STATES.INSTRUCTIONS); 
+            return; 
+        }
+
+    }
 }); 
 
 //
@@ -124,6 +148,18 @@ function drawGround() {
 const background = new Image();
 background.src = "./images/pyramid_background.jpg"; // Set image source
 
+//set jewels
+const diamond = new Image();
+const gold = new Image();
+const green = new Image();
+const purple = new Image();
+const red = new Image();
+diamond.src = "./images/jewels/diamond-jewel.png";
+gold.src = "./images/jewels/gold-jewel.png";
+green.src = "./images/jewels/green-jewel.png";
+purple.src = "./images/jewels/purple-jewel.png";
+red.src = "./images/jewels/red-jewel.png";
+
 function drawBackground() {
     // draw background
     ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
@@ -131,7 +167,6 @@ function drawBackground() {
 
 function drawMenu() { 
     drawBackground();
-    //drawGround();
     
     ctx.fillStyle = '#000000ff'; 
     ctx.textAlign = 'center'; 
@@ -141,12 +176,68 @@ function drawMenu() {
     ctx.font = 'bold 20px Papyrus'; 
     ctx.fillText('Press SPACE to Start', canvas.width / 2, 185); 
 
-    // ctx.fillText('During play: ' , canvas.width / 2, 245); 
-    // ctx.font = '20px Times New Roman';
-    // ctx.fillText('SPACE = shoot', canvas.width / 2, 280);
-    // ctx.fillText('UP ARROW = jump up', canvas.width / 2, 305);
-    // ctx.fillText('DOWN ARROW = slam down', canvas.width / 2, 330);
 } 
+
+function drawNumPlayer() {
+    drawBackground();
+
+    ctx.fillStyle = '#000000ff'; 
+    ctx.textAlign = 'center'; 
+    ctx.font = 'bold 50px Papyrus'; 
+    ctx.fillText('Select Game Mode', canvas.width / 2, 100); 
+    
+    ctx.textAlign = 'left'; 
+    ctx.font = 'bold 25px Papyrus'; 
+    ctx.fillText('Single Player', canvas.width / 4, 165); 
+
+    ctx.font = 'bold 20px Papyrus'; 
+    ctx.fillText('Press 1', canvas.width / 3 - 35, 195); 
+
+    ctx.textAlign = 'right'; 
+    ctx.font = 'bold 25px Papyrus'; 
+    ctx.fillText('Multiplayer', canvas.width / 4 * 3, 165); 
+
+    ctx.font = 'bold 20px Papyrus'; 
+    ctx.fillText('Press 2', canvas.width / 3 * 2 + 45, 195); 
+}
+
+function drawInstructions() {
+    drawBackground();
+
+    //Single Player Instructions
+    if(multiplayer === false)
+    {
+        ctx.fillStyle = '#000000ff'; 
+        ctx.textAlign = 'left'; 
+        ctx.font = 'bold 20px Papyrus'; 
+        ctx.fillText('Single Player', 10, 30); 
+
+        ctx.textAlign = 'center'; 
+        ctx.font = 'bold 50px Papyrus'; 
+        ctx.fillText('How to Play!', canvas.width / 2, 80); 
+
+        ctx.font = 'bold 30px Papyrus'; 
+        ctx.fillText('Race to Collect all 5 of the Pharaoh\'s Jewels!', canvas.width / 2, 130); 
+
+        ctx.drawImage(diamond, 0, 35);
+        ctx.drawImage(gold, 125, 35);
+        ctx.drawImage(green, 250, 35);
+        ctx.drawImage(purple, 375, 35);
+        ctx.drawImage(red, 500, 45);
+
+    }
+
+    //Multiplayer Instructions
+    else{
+        ctx.fillStyle = '#000000ff'; 
+        ctx.textAlign = 'center'; 
+        ctx.font = 'bold 50px Papyrus'; 
+        ctx.fillText('How to Play!', canvas.width / 2, 80);
+
+        ctx.font = 'bold 20px Papyrus'; 
+        ctx.fillText('Multiplayer', canvas.width / 2, 120); 
+    }
+}
 
 function drawPlaying() { 
     // draw stuff while playing
@@ -174,6 +265,12 @@ function gameLoop() {
     switch (currentState) { 
         case STATES.MENU: 
         drawMenu(); 
+        break; 
+        case STATES.NUM_PLAYER: 
+        drawNumPlayer(); 
+        break; 
+        case STATES.INSTRUCTIONS: 
+        drawInstructions(); 
         break; 
         case STATES.PLAYING: 
         updatePlaying(); 

@@ -4,7 +4,14 @@ const ctx = canvas.getContext('2d');
 //
 //-----------------------------------AUDIO FUNCTIONS-----------------------------------
 //
+//music
+    const title_music = new Audio('assets/audio/title_music.mp3');
+    title_music.loop = true;
+    title_music.volume = 0.35; // 0.0 to 1.0
 
+    const level_music = new Audio('assets/audio/level_music.mp3');
+    level_music.loop = true;
+    level_music.volume = 0.35; // 0.0 to 1.0
 
 //
 //-----------------------------------GAME STATES-----------------------------------
@@ -43,7 +50,7 @@ function changeState(newState) {
     } 
     
     if (newState === STATES.GAMEOVER) { 
-        highScore = Math.max(highScore, Math.floor(score)); 
+        //highScore = Math.max(highScore, Math.floor(score)); 
         
     } 
 } 
@@ -152,8 +159,8 @@ function drawGround() {
 //set background
 const IMG_title = new Image();
 const IMG_level = new Image()
-IMG_title.src = "./images/pyramid_background.jpg";
-IMG_level.src = "./images/level_background.png";
+IMG_title.src = "./assets/images/pyramid_background.jpg";
+IMG_level.src = "./assets/images/level_background.png";
 
 //set jewels
 const IMG_diamond = new Image();
@@ -161,23 +168,23 @@ const IMG_gold = new Image();
 const IMG_green = new Image();
 const IMG_purple = new Image();
 const IMG_red = new Image();
-IMG_diamond.src = "./images/jewels/diamond-jewel.png";
-IMG_gold.src = "./images/jewels/gold-jewel.png";
-IMG_green.src = "./images/jewels/green-jewel.png";
-IMG_purple.src = "./images/jewels/purple-jewel.png";
-IMG_red.src = "./images/jewels/red-jewel.png";
+IMG_diamond.src = "./assets/images/jewels/diamond-jewel.png";
+IMG_gold.src = "./assets/images/jewels/gold-jewel.png";
+IMG_green.src = "./assets/images/jewels/green-jewel.png";
+IMG_purple.src = "./assets/images/jewels/purple-jewel.png";
+IMG_red.src = "./assets/images/jewels/red-jewel.png";
 
 //set WASD & IJKL
 const IMG_wasd = new Image();
 const IMG_ijkl = new Image();
-IMG_wasd.src = "./images/key_pics/WASD_Keys.png";
-IMG_ijkl.src = "./images/key_pics/IJKL_Keys.png";
+IMG_wasd.src = "./assets/images/key_pics/WASD_Keys.png";
+IMG_ijkl.src = "./assets/images/key_pics/IJKL_Keys.png";
 
 //set player characters
 const IMG_player1 = new Image();
 const IMG_player2 = new Image();
-IMG_player1.src = "./images/player1.png";
-IMG_player2.src = "./images/player2.png";
+IMG_player1.src = "./assets/images/player1.png";
+IMG_player2.src = "./assets/images/player2.png";
 
 function drawMenu() { 
     ctx.drawImage(IMG_title, 0, 0, canvas.width, canvas.height);
@@ -189,6 +196,17 @@ function drawMenu() {
     
     ctx.font = 'bold 20px Papyrus'; 
     ctx.fillText('Press SPACE to Start', canvas.width / 2, 185); 
+
+    ctx.fillStyle = '#000000'; 
+    ctx.textAlign = 'left'; 
+    ctx.font = 'bold 15px Papyrus'; 
+    // ctx.fillText('Created by', 5, canvas.height - 45);
+    // ctx.fillText('Riley Tate', 5, canvas.height - 25);
+    // ctx.fillText('Harrison Niswander', 5, canvas.height - 5);
+
+    ctx.fillText('Created by', 5, 20);
+    ctx.fillText('Riley Tate', 5, 40);
+    ctx.fillText('Harrison Niswander', 5, 60);
 
 } 
 
@@ -350,21 +368,30 @@ function drawGameOver() {
 
 function gameLoop() { 
     switch (currentState) { 
-        case STATES.MENU: 
-        drawMenu(); 
+        case STATES.MENU:
+            level_music.pause();
+            title_music.play().catch(() => {}); 
+            drawMenu(); 
         break; 
+
         case STATES.NUM_PLAYER: 
-        drawNumPlayer(); 
+            drawNumPlayer(); 
         break; 
+
         case STATES.INSTRUCTIONS: 
-        drawInstructions(); 
+            drawInstructions(); 
         break; 
+
         case STATES.PLAYING: 
-        updatePlaying(); 
-        drawPlaying(); 
+            title_music.pause();
+            level_music.play().catch(() => {}); 
+            updatePlaying(); 
+            drawPlaying(); 
         break; 
+
         case STATES.GAMEOVER: 
-        drawGameOver(); 
+
+            drawGameOver(); 
         break; 
     } 
     

@@ -49,16 +49,24 @@ const GROUND_Y = 400;
 const GRAVITY = 0.75;
 
 //player
-let player1 = { x: 0, y: 380, w: 140, h: 95, speed: 15 };    
-let player2 = { x: 0, y: 380, w: 140, h: 95, speed: 5 };
+let player1 = { x: 0, y: 0, w: 0, h: 0};    
+let player2 = { x: 0, y: 380, w: 140, h: 95};
+// const platform = {
+//     x: 0,
+//     y: 0,
+//     w: 200,
+//     h: 100
+// };
+
+platform = [];
 
 function resetGame() { 
     //reset game variables
     player1 = { 
         x: 0, 
         y: 400, 
-        w: 140, 
-        h: 95, 
+        w: 0, 
+        h: 70, 
         vx: 0,
         vy: 0, 
         onGround: true,
@@ -67,13 +75,15 @@ function resetGame() {
     player2 = { 
         x: 0, 
         y: 400, 
-        w: 140, 
-        h: 95, 
+        w: 0, 
+        h: 70, 
         vx: 0,
         vy: 0, 
         onGround: true,
         facing: 'right' 
     };
+
+    platform = [];
 } 
 
 resetGame();
@@ -82,8 +92,8 @@ function changeState(newState) {
     currentState = newState; 
     
     if (newState === STATES.PLAYING) { 
-        resetGame(); 
-        
+        resetGame();
+        spawnPlatform();
         
     } 
     
@@ -169,7 +179,7 @@ document.addEventListener('keydown', (e) => {
         {
             // move left
             if (currentState === STATES.PLAYING) { 
-                player1.vx = -20; 
+                player1.vx = -10; 
                 player1.facing = 'left';
 
             }
@@ -183,7 +193,7 @@ document.addEventListener('keydown', (e) => {
         {
             // move right
             if (currentState === STATES.PLAYING) { 
-                player1.vx = 20; 
+                player1.vx = 10; 
                 player1.facing = 'right';
                 
             }
@@ -266,6 +276,20 @@ function rectCircle(rect, circle) {
 } 
 
 //
+//-----------------------------------SPAWNING FUNCTIONS-----------------------------------
+//
+function spawnPlatform()
+{
+    platform.push({
+        x: 115,
+        y: 280,
+        w: 150,
+        h: 20
+    });
+
+}
+
+//
 //-----------------------------------UPDATE PLAYING-----------------------------------
 //
 
@@ -277,13 +301,10 @@ function updatePlaying() {
 
     //x direction
     player1.x += player1.vx;
-    //friction
-    player1.vx *= 0.8;
+    player1.vx *= 0.8;          //friction
 
     
-
-    
-        
+    //make sure plater doesn't go through floor
     if (player1.y + player1.h >= GROUND_Y) { 
         player1.y = GROUND_Y - player1.h; 
         player1.vy = 0; 
@@ -309,6 +330,17 @@ function updatePlaying() {
     {
         player1.x = 815;
         player1.vy = 0;
+    }
+
+    //check collision with player and platforms
+    for(let i = 0; i < platform.length; i++)
+    {
+        if(aabb(player1, platform[i]) && player1.vy > 0) 
+        {
+            player1.y = platform[i].y - player1.h;
+            player1.vy = 0; 
+            player1.onGround = true;
+        }
     }
 }
 
@@ -350,6 +382,10 @@ const IMG_player1 = new Image();
 const IMG_player2 = new Image();
 IMG_player1.src = "./assets/images/player1.png";
 IMG_player2.src = "./assets/images/player2.png";
+
+//set platforms
+const IMG_platform = new Image();
+IMG_platform.src = "./assets/images/platform.png";
 
 function drawMenu() { 
     ctx.drawImage(IMG_title, 0, 0, canvas.width, canvas.height);
@@ -399,7 +435,7 @@ function drawNumPlayer() {
     ctx.font = 'bold 20px Papyrus'; 
     ctx.fillText('Press 2', canvas.width / 3 * 2 + 45, 195); 
 
-    ctx.drawImage(IMG_player1, 520, 180, 140, 140);
+    ctx.drawImage(IMG_player1, 520, 180, 40, 70);
     ctx.drawImage(IMG_player2, 570, 180, 140, 140);
     
 }
@@ -504,8 +540,8 @@ function drawInstructions() {
 }
 
 function drawCharacter(character, image) {
-    const drawW = 140;
-    const drawH = 140;
+    const drawW = 40;
+    const drawH = 70;
 
     if (character.facing === 'left') {
         ctx.save();
@@ -525,13 +561,20 @@ function drawPlaying() {
     //draw ground
     drawGround();
 
+    //draw platforms (before character so they appear behind)
+    for(let i = 0; i < platform.length; i++)
+    {
+        //ctx.drawImage(IMG_platform, platform[i].x, platform[i].y, platform[i].w, platform[i].h);
+        ctx.fillStyle = '#000000'; 
+        ctx.fillRect(platform[i].x, platform[i].y, platform[i].w, platform[i].h); 
+    }
+
     ctx.fillStyle = '#FFD782'; 
     ctx.textAlign = 'center'; 
     ctx.font = 'bold 72px Arial'; 
     ctx.fillText('PLAYING THE GAME', canvas.width / 2, 140); 
 
     drawCharacter(player1, IMG_player1);
-    
 } 
 
 function drawGameOver() { 

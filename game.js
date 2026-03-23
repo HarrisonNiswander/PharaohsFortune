@@ -49,26 +49,26 @@ const GROUND_Y = 400;
 const GRAVITY = 0.75;
 
 //player
-let player1 = { x: 0, y: 410, w: 40, h: 40, speed: 5 };    //edit width and height for image
-let player2 = { x: 160, y: 410, w: 40, h: 40, speed: 5 };
+let player1 = { x: 0, y: 380, w: 140, h: 95, speed: 15 };    
+let player2 = { x: 0, y: 380, w: 140, h: 95, speed: 5 };
 
 function resetGame() { 
     //reset game variables
     player1 = { 
         x: 0, 
-        y: 320, 
-        w: 36, 
-        h: 36, 
+        y: 400, 
+        w: 140, 
+        h: 95, 
         vx: 0,
         vy: 0, 
         onGround: true,
         facing: 'right' 
     };
     player2 = { 
-        x: 200, 
-        y: 320, 
-        w: 36, 
-        h: 36, 
+        x: 0, 
+        y: 400, 
+        w: 140, 
+        h: 95, 
         vx: 0,
         vy: 0, 
         onGround: true,
@@ -294,6 +294,20 @@ function updatePlaying() {
     if(player1.y < 0)
     {
         player1.y = 0;
+        player1.vy = 0;
+    }
+
+    //make sure they can't run off left side of screen
+    if(player1.x < -55)
+    {
+        player1.x = -55;
+        player1.vy = 0;
+    }
+
+    //make sure they can't run off the right side of screen
+    if(player1.x > 815)
+    {
+        player1.x = 815;
         player1.vy = 0;
     }
 }

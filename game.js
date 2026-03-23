@@ -48,9 +48,32 @@ let multiplayer = false;
 const GROUND_Y = 400; 
 const GRAVITY = 0.75;
 
+//player
+let player1 = { x: 0, y: 410, w: 40, h: 40, speed: 5 };    //edit width and height for image
+let player2 = { x: 160, y: 410, w: 40, h: 40, speed: 5 };
+
 function resetGame() { 
     //reset game variables
-
+    player1 = { 
+        x: 0, 
+        y: 320, 
+        w: 36, 
+        h: 36, 
+        vx: 0,
+        vy: 0, 
+        onGround: true,
+        facing: 'right' 
+    };
+    player2 = { 
+        x: 200, 
+        y: 320, 
+        w: 36, 
+        h: 36, 
+        vx: 0,
+        vy: 0, 
+        onGround: true,
+        facing: 'right' 
+    };
 } 
 
 resetGame();
@@ -120,6 +143,94 @@ document.addEventListener('keydown', (e) => {
         }
 
     }
+
+    //
+    //Player 1 Controls
+    //
+
+    if( e.code === 'KeyW')
+    {
+        e.preventDefault();
+        if(currentState === STATES.PLAYING)
+        {
+            // Implement player jump logic here
+            if (currentState === STATES.PLAYING && player1.onGround === true) { 
+                player1.vy = -14; 
+                player1.onGround = false; 
+
+            }
+        }
+    }
+
+    if( e.code === 'KeyA')
+    {
+        e.preventDefault();
+        if(currentState === STATES.PLAYING)
+        {
+            // move left
+            if (currentState === STATES.PLAYING) { 
+                player1.vx = -20; 
+                player1.facing = 'left';
+
+            }
+        }
+    }
+
+    if( e.code === 'KeyD')
+    {
+        e.preventDefault();
+        if(currentState === STATES.PLAYING)
+        {
+            // move right
+            if (currentState === STATES.PLAYING) { 
+                player1.vx = 20; 
+                player1.facing = 'right';
+                
+            }
+        }
+    }
+
+    //
+    //Player 2 Controls
+    //
+
+    if( e.code === 'KeyI')
+    {
+        e.preventDefault();
+        if(currentState === STATES.PLAYING)
+        {
+            // Implement player jump logic here
+            if (currentState === STATES.PLAYING) { 
+                player2.vy = -14; 
+                player2.onGround = false; 
+
+            }
+        }
+    }
+
+    if( e.code === 'KeyJ')
+    {
+        e.preventDefault();
+        if(currentState === STATES.PLAYING)
+        {
+            player2.vx = -20;
+            player2.facing = 'left';
+        }
+    }
+
+    if( e.code === 'KeyL')
+    {
+        e.preventDefault();
+        if(currentState === STATES.PLAYING)
+        {
+            player2.vx = 20;
+            player2.facing = 'right';
+        }
+    }
+    
+
+
+
 }); 
 
 //
@@ -159,7 +270,32 @@ function rectCircle(rect, circle) {
 //
 
 function updatePlaying() { 
+    // Physics 
+    //y direction
+    player1.vy += GRAVITY; 
+    player1.y += player1.vy; 
+
+    //x direction
+    player1.x += player1.vx;
+    //friction
+    player1.vx *= 0.8;
+
     
+
+    
+        
+    if (player1.y + player1.h >= GROUND_Y) { 
+        player1.y = GROUND_Y - player1.h; 
+        player1.vy = 0; 
+        player1.onGround = true; 
+    } 
+
+    //make sure they can't jump off top of screen
+    if(player1.y < 0)
+    {
+        player1.y = 0;
+        player1.vy = 0;
+    }
 }
 
 //
@@ -353,6 +489,21 @@ function drawInstructions() {
     }
 }
 
+function drawCharacter(character, image) {
+    const drawW = 140;
+    const drawH = 140;
+
+    if (character.facing === 'left') {
+        ctx.save();
+        ctx.translate(character.x + drawW, character.y);
+        ctx.scale(-1, 1);
+        ctx.drawImage(image, 0, 0, drawW, drawH);
+        ctx.restore();
+    } else {
+        ctx.drawImage(image, character.x, character.y, drawW, drawH);
+    }
+}
+
 function drawPlaying() { 
     //level background
     ctx.drawImage(IMG_level, 0, 0, canvas.width, canvas.height);
@@ -365,6 +516,8 @@ function drawPlaying() {
     ctx.font = 'bold 72px Arial'; 
     ctx.fillText('PLAYING THE GAME', canvas.width / 2, 140); 
 
+    drawCharacter(player1, IMG_player1);
+    
 } 
 
 function drawGameOver() { 

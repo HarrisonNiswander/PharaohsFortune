@@ -13,6 +13,19 @@ const ctx = canvas.getContext('2d');
     level_music.loop = true;
     level_music.volume = 0.35; // 0.0 to 1.0
 
+    //allow music to player after first button iteraction
+    let audioUnlocked = false;
+    function unlockAudioAndStartMusic() {
+        if (audioUnlocked) return;
+        audioUnlocked = true;
+        title_music.play().catch(() => {
+            // Browser may still block; try again on next user input
+        });
+    }
+    document.addEventListener('keydown', () => {
+        unlockAudioAndStartMusic();
+    }, { once: false });
+
 //
 //-----------------------------------GAME STATES-----------------------------------
 //
@@ -31,7 +44,9 @@ let multiplayer = false;
 //-----------------------------------GAME VARIABLES-----------------------------------
 //
 
-//variables
+//ground location and gravity
+const GROUND_Y = 400; 
+const GRAVITY = 0.75;
 
 function resetGame() { 
     //reset game variables
@@ -341,6 +356,9 @@ function drawInstructions() {
 function drawPlaying() { 
     //level background
     ctx.drawImage(IMG_level, 0, 0, canvas.width, canvas.height);
+
+    //draw ground
+    drawGround();
 
     ctx.fillStyle = '#FFD782'; 
     ctx.textAlign = 'center'; 

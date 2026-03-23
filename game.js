@@ -426,7 +426,7 @@ function drawNumPlayer() {
     ctx.font = 'bold 20px Papyrus'; 
     ctx.fillText('Press 1', canvas.width / 3 - 35, 195); 
 
-    ctx.drawImage(IMG_player1, 230, 180, 140, 140);
+    ctx.drawImage(IMG_player1, 280, 210, 40, 70);
 
     ctx.textAlign = 'right'; 
     ctx.font = 'bold 25px Papyrus'; 
@@ -435,8 +435,8 @@ function drawNumPlayer() {
     ctx.font = 'bold 20px Papyrus'; 
     ctx.fillText('Press 2', canvas.width / 3 * 2 + 45, 195); 
 
-    ctx.drawImage(IMG_player1, 520, 180, 40, 70);
-    ctx.drawImage(IMG_player2, 570, 180, 140, 140);
+    ctx.drawImage(IMG_player1, 570, 210, 40, 70);
+    ctx.drawImage(IMG_player2, 620, 210, 40, 70);
     
 }
 
@@ -478,7 +478,7 @@ function drawInstructions() {
         ctx.fillText('D   -->  Right', canvas.width / 3 * 2 - 50, 390); 
 
         //players
-        ctx.drawImage(IMG_player1, canvas.width - 100, -15, 140, 140);
+        ctx.drawImage(IMG_player1, canvas.width - 60, 10, 40, 70);
         
         ctx.fillStyle = '#ffffff'; 
         ctx.textAlign = 'right'; 
@@ -529,8 +529,8 @@ function drawInstructions() {
         ctx.fillText('L   -->  Right', canvas.width / 2 + 310, 390); 
 
         //players
-        ctx.drawImage(IMG_player1, canvas.width - 150, -15, 140, 140);
-        ctx.drawImage(IMG_player2, canvas.width - 100, -15, 140, 140);
+        ctx.drawImage(IMG_player1, canvas.width - 110, 10, 40, 70);
+        ctx.drawImage(IMG_player2, canvas.width - 60, 10, 40, 70);
         
         ctx.fillStyle = '#ffffff'; 
         ctx.textAlign = 'right'; 

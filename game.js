@@ -711,14 +711,8 @@ function updateTimer() {
 }
 
 //
-//-----------------------------------DRAW FUNCTIONS-----------------------------------
+//-----------------------------------IMAGES-----------------------------------
 //
-
-function drawGround() { 
-    ctx.fillStyle = '#2f2f2f'; 
-    ctx.fillRect(0, GROUND_Y, canvas.width, canvas.height - GROUND_Y); 
-} 
-
 //set background
 const IMG_title = new Image();
 const IMG_level = new Image()
@@ -752,6 +746,15 @@ IMG_player2.src = "./assets/images/player2.png";
 //set platforms
 const IMG_platform = new Image();
 IMG_platform.src = "./assets/images/platform.png";
+
+//
+//-----------------------------------DRAW FUNCTIONS-----------------------------------
+//
+
+function drawGround() { 
+    ctx.fillStyle = '#2f2f2f'; 
+    ctx.fillRect(0, GROUND_Y, canvas.width, canvas.height - GROUND_Y); 
+}
 
 function drawTransitionOverlay() { 
     if (fadeAlpha <= 0) return; 

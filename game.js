@@ -100,6 +100,7 @@ let player2 = { x: 0, y: 380, w: 140, h: 95};
 // };
 
 platform = [];
+jewel = [];
 
 player1_score = 0;
 player_2score = 0;
@@ -128,6 +129,7 @@ function resetGame() {
     };
 
     platform = [];
+    jewel = [];
 
     player1_score = 0;
     player2_score = 0;
@@ -569,12 +571,47 @@ function spawnJewels()
         }
     }
 
+    //WHEN PLACING JEWELS INTO THE WORLD USE FORMAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    /*
+        jewel.push(
+            x: _______,
+            y: _______,
+            w: 40,
+            h: 40
+        );
+    */
+
 
 
 }
 
-function setColor() {
+function setColor(num) {
+    switch(num)
+    {
+        case 0:
+            //Diamond Selected (0)
 
+        break;
+
+        case 1:
+            //Gold Selected (1) 
+
+        break;
+
+        case 2: 
+            //Green Selected (2) 
+
+        break;
+
+        case 3:
+            //Purple Selected (3) 
+
+        break;
+
+        default:
+            //Red Selected (4)
+
+    }
 }
 
 //
@@ -693,6 +730,17 @@ function updatePlaying() {
             }
         }
     }
+
+    //check collisions with jewels
+    //check collision with player and platforms
+    for(let i = 0; i < jewel.length; i++){
+        //if(aabb(player1, jewel[i]) || aabb(player2, jewel[i]))
+        if(aabb(player1, jewel[i]))
+        {
+            jewel.splice(i, 1);
+        }
+    }
+
 }
 
 function updateTimer() {
@@ -973,7 +1021,14 @@ function drawPlaying() {
         ctx.fillText(currTime, canvas.width / 2, canvas.height - 15); 
     }
     
-
+    for (const j of jewel) { 
+        ctx.drawImage(IMG_diamond, j.x, j.y, j.h, j.w);
+    }
+    // ctx.drawImage(IMG_diamond, 120, 250, 40, 40);
+    // ctx.drawImage(IMG_gold, canvas.width / 2 - 20, 250, 40, 40);
+    // ctx.drawImage(IMG_green, 740, 250, 40, 40);
+    // ctx.drawImage(IMG_purple, canvas.width / 3 - 20, 160, 40, 40);
+    // ctx.drawImage(IMG_red, canvas.width / 3 * 2 - 20, 160, 40, 40);
     
 } 
 

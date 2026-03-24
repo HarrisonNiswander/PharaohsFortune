@@ -538,15 +538,13 @@ function spawnJewels()
     */
 
     //determine jewel color that is spawned (random) 
-    const jewelResult = Array();
-    let i = 0;
+    const jewelResult = Array(5);
     let randJewel;
 
-    while (i < 5) {
+    for(let i=0; i<jewelResult.length; i++) {
         randJewel = Math.floor(Math.random() * 5);
         console.log(randJewel)
         uniqueNumbers.add(jewelResult);
-        i++;
     }
 
     /*
@@ -558,11 +556,13 @@ function spawnJewels()
         4 - Red
     */
 
-
+    // HELLO HARRISON just to test the collisions and the score count, 
+    // I am spawning every gem at once. 
+    // Or not I do not have a lot of time
 
     //place jewel at location of each chosen location in result array
     //only place next jewel once one before is picked up
-
+    for(let )
 
 
 
@@ -966,7 +966,8 @@ function drawPlaying() {
 } 
 
 function drawGameOver() { 
-    drawPlaying(); 
+    // drawPlaying(); 
+    ctx.drawImage(IMG_level, 0, 0, canvas.width, canvas.height);
     
     ctx.fillStyle = 'rgba(0, 0, 0, 0.55)'; 
     ctx.fillRect(0, 0, canvas.width, canvas.height); 

@@ -215,7 +215,7 @@ document.addEventListener('keydown', (e) => {
         {
             // Implement player jump logic here
             if (currentState === STATES.PLAYING && player1.onGround === true) { 
-                player1.vy = -14; 
+                player1.vy = -12; 
                 player1.onGround = false; 
 
             }
@@ -289,7 +289,8 @@ document.addEventListener('keydown', (e) => {
         e.preventDefault();
         if(currentState === STATES.PLAYING)
         {
-            player2.vx = -20;
+            // player2.vx = -20;
+            jPressed = true;
             player2.facing = 'left';
         }
     }
@@ -313,15 +314,78 @@ document.addEventListener('keydown', (e) => {
         e.preventDefault();
         if(currentState === STATES.PLAYING)
         {
-            player2.vx = 20;
+            // player2.vx = 20;
+            lPressed = true;
             player2.facing = 'right';
         }
     }
-    
-
-
-
 }); 
+
+// Keyup events
+document.addEventListener('keyup', function(e) {
+
+    // Player 1 keyup events for x movement 
+    if( e.code === 'KeyA')
+    {
+        e.preventDefault();
+        if(currentState === STATES.PLAYING)
+        {
+            // move left
+            if (currentState === STATES.PLAYING) { 
+                aPressed = false;
+                // player1.vx = -10; 
+                player1.facing = 'left';
+
+            }
+        }
+    }
+
+    if( e.code === 'KeyD')
+    {
+        e.preventDefault();
+        if(currentState === STATES.PLAYING)
+        {
+            // move right
+            if (currentState === STATES.PLAYING) { 
+                // player1.vx = 10; 
+                dPressed = false;
+                player1.facing = 'right';
+                
+            }
+        }
+    }
+
+    // Player 2 keyup events for x movement
+    if( e.code === 'KeyJ')
+    {
+        e.preventDefault();
+        if(currentState === STATES.PLAYING)
+        {
+            // move left
+            if (currentState === STATES.PLAYING) { 
+                jPressed = false;
+                // player2.vx = -10; 
+                player2.facing = 'left';
+
+            }
+        }
+    }
+
+    if( e.code === 'KeyL')
+    {
+        e.preventDefault();
+        if(currentState === STATES.PLAYING)
+        {
+            // move right
+            if (currentState === STATES.PLAYING) { 
+                // player2.vx = 10; 
+                dPressed = false;
+                player2.facing = 'right';
+                
+            }
+        }
+    }
+})
 
 //
 //-----------------------------------COLLISION FUNCTIONS-----------------------------------
@@ -451,8 +515,15 @@ function updatePlaying() {
     player1.y += player1.vy; 
 
     //x direction
-    player1.x += player1.vx;
-    player1.vx *= 0.85;          //friction
+    // player1.x += player1.vx;
+    // player1.vx *= 0.85;          //friction
+
+    if (aPressed && player1.x > 0) {
+        player1.x -= 6;
+    }
+    if (dPressed && player1.x < canvas.width - 140) {
+        player1.x += 6;
+    }
 
     
     //make sure plater doesn't go through floor

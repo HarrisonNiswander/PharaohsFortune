@@ -562,9 +562,18 @@ function spawnJewels()
 
     //place jewel at location of each chosen location in result array
     //only place next jewel once one before is picked up
-    for(let )
+    for(let i=0; i<jewelResult.length; i++)
+    {
+        if(uniqueNumbers[i] == 0) {
+            
+        }
+    }
 
 
+
+}
+
+function setColor() {
 
 }
 

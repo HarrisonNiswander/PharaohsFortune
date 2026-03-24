@@ -41,6 +41,43 @@ let currentState = STATES.MENU;
 let multiplayer = false;
 
 //
+//-----------------------------------SCREEN FADE-----------------------------------
+//
+
+//screen fades
+let fadeAlpha = 1;           // 0 = clear, 1 = fully black 
+let fadeSpeed = 0.04;        // adjust for faster/slower fade 
+let fadeDirection = -1;       // 1 = fade out, -1 = fade in, 0 = idle 
+let pendingState = null;     // which state we switch to at black screen 
+
+function changeStateWithFade(nextState) { 
+    // ignore if already transitioning 
+    if (fadeDirection !== 0) return; 
+    pendingState = nextState; 
+    fadeDirection = 1; // start fade out 
+} 
+
+function updateTransition() { 
+    if (fadeDirection === 0) return; 
+    
+    fadeAlpha += fadeSpeed * fadeDirection; 
+    
+    // Reached full black: switch state, then fade back in 
+    if (fadeDirection === 1 && fadeAlpha >= 1) { 
+        fadeAlpha = 1; 
+        currentState = pendingState; 
+        pendingState = null; 
+        fadeDirection = -1; 
+    } 
+    
+    // Reached clear screen: stop transition 
+    if (fadeDirection === -1 && fadeAlpha <= 0) { 
+        fadeAlpha = 0; 
+        fadeDirection = 0; 
+    } 
+} 
+
+//
 //-----------------------------------GAME VARIABLES-----------------------------------
 //
 
@@ -89,7 +126,8 @@ function resetGame() {
 resetGame();
 
 function changeState(newState) { 
-    currentState = newState; 
+    changeStateWithFade(newState);
+    //currentState = newState; 
     
     if (newState === STATES.PLAYING) { 
         resetGame();
@@ -487,6 +525,15 @@ IMG_player2.src = "./assets/images/player2.png";
 const IMG_platform = new Image();
 IMG_platform.src = "./assets/images/platform.png";
 
+function drawTransitionOverlay() { 
+    if (fadeAlpha <= 0) return; 
+    ctx.save(); 
+    ctx.globalAlpha = fadeAlpha; 
+    ctx.fillStyle = 'black'; 
+    ctx.fillRect(0, 0, canvas.width, canvas.height); 
+    ctx.restore(); 
+} 
+
 function drawMenu() { 
     ctx.drawImage(IMG_title, 0, 0, canvas.width, canvas.height);
     
@@ -692,19 +739,24 @@ function drawGameOver() {
 } 
 
 function gameLoop() { 
+    updateTransition();
+
     switch (currentState) { 
         case STATES.MENU:
             level_music.pause();
             title_music.play().catch(() => {}); 
-            drawMenu(); 
+            drawMenu();
+            drawTransitionOverlay();    
         break; 
 
         case STATES.NUM_PLAYER: 
             drawNumPlayer(); 
+            drawTransitionOverlay(); 
         break; 
 
         case STATES.INSTRUCTIONS: 
             drawInstructions(); 
+            drawTransitionOverlay(); 
         break; 
 
         case STATES.PLAYING: 
@@ -712,6 +764,7 @@ function gameLoop() {
             level_music.play().catch(() => {}); 
             updatePlaying(); 
             drawPlaying(); 
+            drawTransitionOverlay(); 
         break; 
 
         case STATES.GAMEOVER: 

@@ -540,7 +540,7 @@ function spawnJewels()
     */
 
     //determine jewel color that is spawned (random) 
-    const jewelResult = Array(5);
+    const jewelResult = Array(9);
     let randJewel;
 
     for(let i=0; i<jewelResult.length; i++) {
@@ -566,9 +566,23 @@ function spawnJewels()
     //only place next jewel once one before is picked up
     for(let i=0; i<jewelResult.length; i++)
     {
-        if(uniqueNumbers[i] == 0) {
-            
-        }
+        let jewelIMG;
+        jewelIMG = setColor(jewelResult[i]);
+
+        jewel.push({
+            x: 120,
+            y: 250,
+            w: 40,
+            h: 40
+        });
+
+        jewel.push({
+            x: canvas.width / 2 - 20,
+            y: 50,
+            w: 40,
+            h: 40
+        });
+
     }
 
     //WHEN PLACING JEWELS INTO THE WORLD USE FORMAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -581,6 +595,12 @@ function spawnJewels()
         );
     */
 
+    jewel.push({
+        x: 120,
+        y: 250,
+        w: 40,
+        h: 40
+    });   
 
 
 }
@@ -590,29 +610,33 @@ function setColor(num) {
     {
         case 0:
             //Diamond Selected (0)
-
+            return IMG_diamond;
         break;
 
         case 1:
             //Gold Selected (1) 
-
+            return IMG_gold;
         break;
 
         case 2: 
             //Green Selected (2) 
-
+            return IMG_green;
         break;
 
         case 3:
             //Purple Selected (3) 
-
+            return IMG_purple;
         break;
 
         default:
             //Red Selected (4)
+            return IMG_red;
 
     }
+
 }
+
+
 
 //
 //-----------------------------------UPDATE PLAYING-----------------------------------
@@ -738,6 +762,7 @@ function updatePlaying() {
         if(aabb(player1, jewel[i]))
         {
             jewel.splice(i, 1);
+            player1_score++;
         }
     }
 
@@ -1022,7 +1047,7 @@ function drawPlaying() {
     }
     
     for (const j of jewel) { 
-        ctx.drawImage(IMG_diamond, j.x, j.y, j.h, j.w);
+        ctx.drawImage(IMG_green, j.x, j.y, j.h, j.w);
     }
     // ctx.drawImage(IMG_diamond, 120, 250, 40, 40);
     // ctx.drawImage(IMG_gold, canvas.width / 2 - 20, 250, 40, 40);

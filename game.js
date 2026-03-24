@@ -490,10 +490,12 @@ IMG_platform.src = "./assets/images/platform.png";
 function drawMenu() { 
     ctx.drawImage(IMG_title, 0, 0, canvas.width, canvas.height);
     
-    ctx.fillStyle = '#000000ff'; 
+    ctx.fillStyle = 'rgb(255, 255, 255)'; 
     ctx.textAlign = 'center'; 
     ctx.font = 'bold 70px Papyrus'; 
     ctx.fillText('Pharaoh\'s Fortune', canvas.width / 2, 140); 
+    ctx.fillStyle = 'rgb(0, 0, 0)'; 
+    ctx.fillText('Pharaoh\'s Fortune', canvas.width / 2+3, 137); 
     
     ctx.font = 'bold 20px Papyrus'; 
     ctx.fillText('Press SPACE to Start', canvas.width / 2, 185); 

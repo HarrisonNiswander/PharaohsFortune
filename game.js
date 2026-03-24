@@ -101,6 +101,9 @@ let player2 = { x: 0, y: 380, w: 140, h: 95};
 
 platform = [];
 
+player1_score = 0;
+player_2score = 0;
+
 function resetGame() { 
     //reset game variables
     player1 = { 
@@ -125,6 +128,9 @@ function resetGame() {
     };
 
     platform = [];
+
+    player1_score = 0;
+    player2_score = 0;
 } 
 
 resetGame();
@@ -563,9 +569,9 @@ function updatePlaying() {
     }
 
     //make sure they can't run off the right side of screen
-    if(player1.x > 815)
+    if(player1.x > 860)
     {
-        player1.x = 815;
+        player1.x = 860;
         player1.vy = 0;
     }
 
@@ -618,9 +624,9 @@ function updatePlaying() {
         }
 
         //make sure they can't run off the right side of screen
-        if(player2.x > 815)
+        if(player2.x > 860)
         {
-            player2.x = 815;
+            player2.x = 860;
             player2.vy = 0;
         }
 
@@ -889,19 +895,26 @@ function drawPlaying() {
         ctx.fillRect(platform[i].x, platform[i].y, platform[i].w, platform[i].h); 
     }
 
+    // Draw the player
     drawCharacter(player1, IMG_player1);
+
+    // Draw the player's score
+    ctx.fillStyle = '#ffffff'; 
+    ctx.textAlign = 'left'; 
+    ctx.font = 'bold 30px Papyrus';
+    ctx.fillText('Player 1 Score: ' + player1_score, 5, canvas.height - 15); 
 
     if(multiplayer) {
         drawCharacter(player2, IMG_player2);
 
-        // Draw players' scores
+        // Draw player 2's score
+        ctx.textAlign = 'right'; 
+        ctx.fillText('Player 2 Score: ' + player2_score, canvas.width - 5, canvas.height - 15); 
     }
     else {
         // Draw the time if a single player game
         currTime = updateTimer();
-        ctx.fillStyle = '#ffffff'; 
-        ctx.textAlign = 'right'; 
-        ctx.font = 'bold 30px Papyrus'; 
+        ctx.textAlign = 'center'; 
         ctx.fillText(currTime, canvas.width / 2, canvas.height - 15); 
     }
     

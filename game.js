@@ -1,3 +1,7 @@
+//Game Development
+//Project 2
+//Riley Tate
+//Harrison Niswander
 const canvas = document.getElementById('game'); 
 const ctx = canvas.getContext('2d'); 
 

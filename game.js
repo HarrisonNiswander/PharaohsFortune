@@ -101,6 +101,9 @@ let player2 = { x: 0, y: 380, w: 140, h: 95};
 
 platform = [];
 
+player1_score = 0;
+player_2score = 0;
+
 function resetGame() { 
     //reset game variables
     player1 = { 
@@ -125,6 +128,9 @@ function resetGame() {
     };
 
     platform = [];
+
+    player1_score = 0;
+    player2_score = 0;
 } 
 
 resetGame();
@@ -137,14 +143,25 @@ function changeState(newState) {
         resetGame();
         spawnPlatform();
         spawnJewels();
-        
+        startTimer();
     } 
     
     if (newState === STATES.GAMEOVER) { 
         //highScore = Math.max(highScore, Math.floor(score)); 
-        
+        stopTimer();
     } 
 } 
+
+let startTime;
+function startTimer() {
+    startTime = Date.now(); // Record the start time in milliseconds
+
+}
+
+let endTime;
+function endTimer() {
+    endTime = Date.now();
+}
     
 //
 //-----------------------------------KEYBOARD INPUTS-----------------------------------
@@ -595,9 +612,9 @@ function updatePlaying() {
     }
 
     //make sure they can't run off the right side of screen
-    if(player1.x > 815)
+    if(player1.x > 860)
     {
-        player1.x = 815;
+        player1.x = 860;
         player1.vy = 0;
     }
 
@@ -650,9 +667,9 @@ function updatePlaying() {
         }
 
         //make sure they can't run off the right side of screen
-        if(player2.x > 815)
+        if(player2.x > 860)
         {
-            player2.x = 815;
+            player2.x = 860;
             player2.vy = 0;
         }
 
@@ -667,6 +684,21 @@ function updatePlaying() {
             }
         }
     }
+}
+
+function updateTimer() {
+    // Calculate elapsed time in seconds
+    let elapsedTimeInSeconds = Math.floor((Date.now() - startTime) / 10);
+
+    // Format the time as minutes:seconds
+    let minutes = Math.floor((elapsedTimeInSeconds / 100) / 60);
+    let seconds = Math.floor(elapsedTimeInSeconds / 100) % 60;
+    let hund = elapsedTimeInSeconds % 100;
+
+    // Add leading zeros if needed for better display (e.g., 05:02)
+    let formattedTime = minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0') + '.' + hund.toString().padStart(2, '0');
+    
+    return formattedTime;
 }
 
 //
@@ -890,6 +922,7 @@ function drawCharacter(character, image) {
     }
 }
 
+let currTime;
 function drawPlaying() { 
     //level background
     ctx.drawImage(IMG_level, 0, 0, canvas.width, canvas.height);
@@ -905,11 +938,29 @@ function drawPlaying() {
         ctx.fillRect(platform[i].x, platform[i].y, platform[i].w, platform[i].h); 
     }
 
+    // Draw the player
     drawCharacter(player1, IMG_player1);
+
+    // Draw the player's score
+    ctx.fillStyle = '#ffffff'; 
+    ctx.textAlign = 'left'; 
+    ctx.font = 'bold 30px Papyrus';
+    ctx.fillText('Player 1 Score: ' + player1_score, 5, canvas.height - 15); 
 
     if(multiplayer) {
         drawCharacter(player2, IMG_player2);
+
+        // Draw player 2's score
+        ctx.textAlign = 'right'; 
+        ctx.fillText('Player 2 Score: ' + player2_score, canvas.width - 5, canvas.height - 15); 
     }
+    else {
+        // Draw the time if a single player game
+        currTime = updateTimer();
+        ctx.textAlign = 'center'; 
+        ctx.fillText(currTime, canvas.width / 2, canvas.height - 15); 
+    }
+    
 
     
 } 

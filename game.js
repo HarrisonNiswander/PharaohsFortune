@@ -114,7 +114,7 @@ function resetGame() {
         facing: 'right' 
     };
     player2 = { 
-        x: 0, 
+        x: canvas.width - 40, 
         y: 400, 
         w: 0, 
         h: 70, 
@@ -383,7 +383,7 @@ document.addEventListener('keyup', function(e) {
             // move right
             if (currentState === STATES.PLAYING) { 
                 // player2.vx = 10; 
-                dPressed = false;
+                lPressed = false;
                 player2.facing = 'right';
                 
             }
@@ -525,7 +525,7 @@ function updatePlaying() {
     if (aPressed && player1.x > 0) {
         player1.x -= 6;
     }
-    if (dPressed && player1.x < canvas.width - 140) {
+    if (dPressed) {
         player1.x += 6;
     }
 
@@ -566,6 +566,62 @@ function updatePlaying() {
             player1.y = platform[i].y - player1.h;
             player1.vy = 0; 
             player1.onGround = true;
+        }
+    }
+
+    // MULTIPLAYER MOVEMENT / COLLISIONS
+    if(multiplayer) {
+        // Physics 
+        //y direction
+        player2.vy += GRAVITY; 
+        player2.y += player2.vy; 
+
+        //x direction
+        if (jPressed && player2.x > 0) {
+            player2.x -= 6;
+        }
+        if (lPressed) {
+            player2.x += 6;
+        }
+
+        
+        //make sure plater doesn't go through floor
+        if (player2.y + player2.h >= GROUND_Y) { 
+            player2.y = GROUND_Y - player2.h; 
+            player2.vy = 0; 
+            player2.onGround = true; 
+        } 
+
+        //make sure they can't jump off top of screen
+        if(player2.y < 0)
+        {
+            player2.y = 0;
+            player2.vy = 0;
+        }
+
+        //make sure they can't run off left side of screen
+        if(player2.x < -55)
+        {
+            player2.x = -55;
+            player2.vy = 0;
+        }
+
+        //make sure they can't run off the right side of screen
+        if(player2.x > 815)
+        {
+            player2.x = 815;
+            player2.vy = 0;
+        }
+
+        //check collision with player and platforms
+        for(let i = 0; i < platform.length; i++)
+        {
+            if(aabb(player2, platform[i]) && player2.vy > 0) 
+            {
+                player2.y = platform[i].y - player2.h;
+                player2.vy = 0; 
+                player2.onGround = true;
+            }
         }
     }
 }
@@ -807,6 +863,10 @@ function drawPlaying() {
     }
 
     drawCharacter(player1, IMG_player1);
+
+    if(multiplayer) {
+        drawCharacter(player2, IMG_player2);
+    }
 } 
 
 function drawGameOver() { 

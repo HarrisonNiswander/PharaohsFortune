@@ -137,14 +137,25 @@ function changeState(newState) {
         resetGame();
         spawnPlatform();
         spawnJewels();
-        
+        startTimer();
     } 
     
     if (newState === STATES.GAMEOVER) { 
         //highScore = Math.max(highScore, Math.floor(score)); 
-        
+        stopTimer();
     } 
 } 
+
+let startTime;
+function startTimer() {
+    startTime = Date.now(); // Record the start time in milliseconds
+
+}
+
+let endTime;
+function endTimer() {
+    endTime = Date.now();
+}
     
 //
 //-----------------------------------KEYBOARD INPUTS-----------------------------------
@@ -626,6 +637,21 @@ function updatePlaying() {
     }
 }
 
+function updateTimer() {
+    // Calculate elapsed time in seconds
+    let elapsedTimeInSeconds = Math.floor((Date.now() - startTime) / 10);
+
+    // Format the time as minutes:seconds
+    let minutes = Math.floor((elapsedTimeInSeconds / 100) / 60);
+    let seconds = Math.floor(elapsedTimeInSeconds / 100) % 60;
+    let hund = elapsedTimeInSeconds % 100;
+
+    // Add leading zeros if needed for better display (e.g., 05:02)
+    let formattedTime = minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0') + '.' + hund.toString().padStart(2, '0');
+    
+    return formattedTime;
+}
+
 //
 //-----------------------------------DRAW FUNCTIONS-----------------------------------
 //
@@ -847,6 +873,7 @@ function drawCharacter(character, image) {
     }
 }
 
+let currTime;
 function drawPlaying() { 
     //level background
     ctx.drawImage(IMG_level, 0, 0, canvas.width, canvas.height);
@@ -866,7 +893,18 @@ function drawPlaying() {
 
     if(multiplayer) {
         drawCharacter(player2, IMG_player2);
+
+        // Draw players' scores
     }
+    else {
+        // Draw the time if a single player game
+        currTime = updateTimer();
+        ctx.fillStyle = '#ffffff'; 
+        ctx.textAlign = 'right'; 
+        ctx.font = 'bold 30px Papyrus'; 
+        ctx.fillText(currTime, canvas.width / 2, canvas.height - 15); 
+    }
+    
 } 
 
 function drawGameOver() { 

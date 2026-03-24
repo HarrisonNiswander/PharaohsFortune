@@ -94,6 +94,7 @@ function changeState(newState) {
     if (newState === STATES.PLAYING) { 
         resetGame();
         spawnPlatform();
+        spawnJewels();
         
     } 
     
@@ -359,6 +360,35 @@ function spawnPlatform()
 
 }
 
+function spawnJewels()
+{
+    //determine location
+    const uniqueNumbers = new Set();
+
+    while (uniqueNumbers.size < 5) {
+        const r = Math.floor(Math.random() * 10);
+        uniqueNumbers.add(r);
+    }
+
+    // Convert Set back to an Array
+    const result = Array.from(uniqueNumbers);
+
+    /*
+        Possible Jewel Locations (10)
+        0 - (x = 
+        1 - 
+        2 - 
+        3 - 
+        4 - 
+        5 - 
+        6 - 
+        7 - 
+        8 - 
+        9 - 
+    
+    */
+}
+
 //
 //-----------------------------------UPDATE PLAYING-----------------------------------
 //
@@ -529,11 +559,11 @@ function drawInstructions() {
         ctx.fillText('Race to Collect all 5 of the Pharaoh\'s Jewels!', canvas.width / 2, 130); 
 
         //jewels
-        ctx.drawImage(IMG_diamond, 0, 35);
-        ctx.drawImage(IMG_gold, 125, 35);
-        ctx.drawImage(IMG_green, 250, 35);
-        ctx.drawImage(IMG_purple, 375, 35);
-        ctx.drawImage(IMG_red, 500, 45);
+        ctx.drawImage(IMG_diamond, 250, 150, 40, 40);
+        ctx.drawImage(IMG_gold, 350, 150, 40, 40);
+        ctx.drawImage(IMG_green, canvas.width / 2, 150, 40, 40);
+        ctx.drawImage(IMG_purple, 550, 150, 40, 40);
+        ctx.drawImage(IMG_red, 650, 150, 40, 40);
 
         //WASD
         ctx.font = 'bold 25px Papyrus'; 
@@ -572,11 +602,11 @@ function drawInstructions() {
         ctx.fillText('Race to Collect 5 of the Pharaoh\'s Jewels!', canvas.width / 2, 130); 
 
         //jewels
-        ctx.drawImage(IMG_diamond, 0, 35);
-        ctx.drawImage(IMG_gold, 125, 35);
-        ctx.drawImage(IMG_green, 250, 35);
-        ctx.drawImage(IMG_purple, 375, 35);
-        ctx.drawImage(IMG_red, 500, 45);
+        ctx.drawImage(IMG_diamond, 250, 150, 40, 40);
+        ctx.drawImage(IMG_gold, 350, 150, 40, 40);
+        ctx.drawImage(IMG_green, canvas.width / 2, 150, 40, 40);
+        ctx.drawImage(IMG_purple, 550, 150, 40, 40);
+        ctx.drawImage(IMG_red, 650, 150, 40, 40);
 
         //WASD
         ctx.font = 'bold 25px Papyrus'; 

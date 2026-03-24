@@ -219,7 +219,7 @@ document.addEventListener('keydown', (e) => {
         {
             // Implement player jump logic here
             if (currentState === STATES.PLAYING && player1.onGround === true) { 
-                player1.vy = -12; 
+                player1.vy = -13; 
                 player1.onGround = false; 
 
             }
@@ -281,7 +281,7 @@ document.addEventListener('keydown', (e) => {
         {
             // Implement player jump logic here
             if (currentState === STATES.PLAYING) { 
-                player2.vy = -14; 
+                player2.vy = -13; 
                 player2.onGround = false; 
 
             }
@@ -430,49 +430,49 @@ function spawnPlatform()
 {
     platform.push({
         x: 80,
-        y: 280,
+        y: 300,
         w: 120,
         h: 15
     });
 
     platform.push({
         x: canvas.width / 2 - 60,
-        y: 280,
+        y: 300,
         w: 120,
         h: 15
     });
 
     platform.push({
         x: 700,
-        y: 280,
+        y: 300,
         w: 120,
         h: 15
     });
 
     platform.push({
         x: canvas.width / 3 - 60,
-        y: 190,
+        y: 210,
         w: 120,
         h: 15
     });
 
     platform.push({
         x: canvas.width / 3 * 2 - 60,
-        y: 190,
+        y: 210,
         w: 120,
         h: 15
     });
 
     platform.push({
         x: 80,
-        y: 70,
+        y: 110,
         w: 120,
         h: 15
     });
 
     platform.push({
         x: 700,
-        y: 70,
+        y: 110,
         w: 120,
         h: 15
     });

@@ -428,6 +428,7 @@ function rectCircle(rect, circle) {
 //
 function spawnPlatform()
 {
+    //0
     platform.push({
         x: 80,
         y: 300,
@@ -435,6 +436,7 @@ function spawnPlatform()
         h: 15
     });
 
+    //1
     platform.push({
         x: canvas.width / 2 - 60,
         y: 300,
@@ -442,6 +444,7 @@ function spawnPlatform()
         h: 15
     });
 
+    //2
     platform.push({
         x: 700,
         y: 300,
@@ -449,6 +452,7 @@ function spawnPlatform()
         h: 15
     });
 
+    //3
     platform.push({
         x: canvas.width / 3 - 60,
         y: 210,
@@ -456,6 +460,7 @@ function spawnPlatform()
         h: 15
     });
 
+    //4
     platform.push({
         x: canvas.width / 3 * 2 - 60,
         y: 210,
@@ -463,6 +468,7 @@ function spawnPlatform()
         h: 15
     });
 
+    //5
     platform.push({
         x: 80,
         y: 110,
@@ -470,6 +476,7 @@ function spawnPlatform()
         h: 15
     });
 
+    //6
     platform.push({
         x: 700,
         y: 110,
@@ -494,18 +501,54 @@ function spawnJewels()
 
     /*
         Possible Jewel Locations (10)
-        0 - (x = 
-        1 - 
-        2 - 
-        3 - 
-        4 - 
-        5 - 
-        6 - 
-        7 - 
-        8 - 
-        9 - 
+        0 - (x = 120, y = 250)
+        1 - (x = canvas.width / 2 - 20, y = 250)
+        2 - (x = 740, y = 250)
+        3 - (x = canvas.width / 3 - 20, y = 160)
+        4 - (x = canvas.width / 3 * 2 - 20, y = 160)
+        5 - (x = 120, y = 60)
+        6 - (x = 740, y = 60)
+        7 - (x = canvas.width / 3 * 2 - 20, y = 350)
+        8 - (x = 270, y = 350)
+        9 - (x = canvas.width / 2 - 20, y = 50)
+
+        0, 1, 2 --> Row 1
+        3, 4 --> Row 2
+        5, 6 --> Row 3
+        7, 8 --> Ground
+        9 --> In the Air
     
     */
+
+    //determine jewel color that is spawned (random) 
+    const jewelResult = Array();
+    let i = 0;
+    let randJewel;
+
+    while (i < 5) {
+        randJewel = Math.floor(Math.random() * 5);
+        console.log(randJewel)
+        uniqueNumbers.add(jewelResult);
+        i++;
+    }
+
+    /*
+        Jewel Color
+        0 - Diamond
+        1 - Gold 
+        2 - Green
+        3 - Purple
+        4 - Red
+    */
+
+
+
+    //place jewel at location of each chosen location in result array
+    //only place next jewel once one before is picked up
+
+
+
+
 }
 
 //
@@ -867,6 +910,8 @@ function drawPlaying() {
     if(multiplayer) {
         drawCharacter(player2, IMG_player2);
     }
+
+    
 } 
 
 function drawGameOver() { 

@@ -49,16 +49,24 @@ const GROUND_Y = 400;
 const GRAVITY = 0.75;
 
 //player
-let player1 = { x: 0, y: 380, w: 140, h: 95, speed: 15 };    
-let player2 = { x: 0, y: 380, w: 140, h: 95, speed: 5 };
+let player1 = { x: 0, y: 0, w: 0, h: 0};    
+let player2 = { x: 0, y: 380, w: 140, h: 95};
+// const platform = {
+//     x: 0,
+//     y: 0,
+//     w: 200,
+//     h: 100
+// };
+
+platform = [];
 
 function resetGame() { 
     //reset game variables
     player1 = { 
         x: 0, 
         y: 400, 
-        w: 140, 
-        h: 95, 
+        w: 0, 
+        h: 70, 
         vx: 0,
         vy: 0, 
         onGround: true,
@@ -67,13 +75,15 @@ function resetGame() {
     player2 = { 
         x: 0, 
         y: 400, 
-        w: 140, 
-        h: 95, 
+        w: 0, 
+        h: 70, 
         vx: 0,
         vy: 0, 
         onGround: true,
         facing: 'right' 
     };
+
+    platform = [];
 } 
 
 resetGame();
@@ -82,8 +92,9 @@ function changeState(newState) {
     currentState = newState; 
     
     if (newState === STATES.PLAYING) { 
-        resetGame(); 
-        
+        resetGame();
+        spawnPlatform();
+        spawnJewels();
         
     } 
     
@@ -169,9 +180,23 @@ document.addEventListener('keydown', (e) => {
         {
             // move left
             if (currentState === STATES.PLAYING) { 
-                player1.vx = -20; 
+                player1.vx = -10; 
                 player1.facing = 'left';
 
+            }
+        }
+    }
+
+    if( e.code === 'KeyS')
+    {
+        e.preventDefault();
+        if(currentState === STATES.PLAYING)
+        {
+            // drop down
+            if (currentState === STATES.PLAYING) { 
+                player1.y += 90;
+                player1.onGround = false; 
+                
             }
         }
     }
@@ -183,7 +208,7 @@ document.addEventListener('keydown', (e) => {
         {
             // move right
             if (currentState === STATES.PLAYING) { 
-                player1.vx = 20; 
+                player1.vx = 10; 
                 player1.facing = 'right';
                 
             }
@@ -215,6 +240,20 @@ document.addEventListener('keydown', (e) => {
         {
             player2.vx = -20;
             player2.facing = 'left';
+        }
+    }
+
+    if( e.code === 'KeyK')
+    {
+        e.preventDefault();
+        if(currentState === STATES.PLAYING)
+        {
+            // drop down
+            if (currentState === STATES.PLAYING) { 
+                player2.y += 90;
+                player2.onGround = false; 
+                
+            }
         }
     }
 
@@ -266,6 +305,91 @@ function rectCircle(rect, circle) {
 } 
 
 //
+//-----------------------------------SPAWNING FUNCTIONS-----------------------------------
+//
+function spawnPlatform()
+{
+    platform.push({
+        x: 80,
+        y: 280,
+        w: 120,
+        h: 15
+    });
+
+    platform.push({
+        x: canvas.width / 2 - 60,
+        y: 280,
+        w: 120,
+        h: 15
+    });
+
+    platform.push({
+        x: 700,
+        y: 280,
+        w: 120,
+        h: 15
+    });
+
+    platform.push({
+        x: canvas.width / 3 - 60,
+        y: 190,
+        w: 120,
+        h: 15
+    });
+
+    platform.push({
+        x: canvas.width / 3 * 2 - 60,
+        y: 190,
+        w: 120,
+        h: 15
+    });
+
+    platform.push({
+        x: 80,
+        y: 70,
+        w: 120,
+        h: 15
+    });
+
+    platform.push({
+        x: 700,
+        y: 70,
+        w: 120,
+        h: 15
+    });
+
+}
+
+function spawnJewels()
+{
+    //determine location
+    const uniqueNumbers = new Set();
+
+    while (uniqueNumbers.size < 5) {
+        const r = Math.floor(Math.random() * 10);
+        uniqueNumbers.add(r);
+    }
+
+    // Convert Set back to an Array
+    const result = Array.from(uniqueNumbers);
+
+    /*
+        Possible Jewel Locations (10)
+        0 - (x = 
+        1 - 
+        2 - 
+        3 - 
+        4 - 
+        5 - 
+        6 - 
+        7 - 
+        8 - 
+        9 - 
+    
+    */
+}
+
+//
 //-----------------------------------UPDATE PLAYING-----------------------------------
 //
 
@@ -277,13 +401,10 @@ function updatePlaying() {
 
     //x direction
     player1.x += player1.vx;
-    //friction
-    player1.vx *= 0.8;
+    player1.vx *= 0.85;          //friction
 
     
-
-    
-        
+    //make sure plater doesn't go through floor
     if (player1.y + player1.h >= GROUND_Y) { 
         player1.y = GROUND_Y - player1.h; 
         player1.vy = 0; 
@@ -309,6 +430,17 @@ function updatePlaying() {
     {
         player1.x = 815;
         player1.vy = 0;
+    }
+
+    //check collision with player and platforms
+    for(let i = 0; i < platform.length; i++)
+    {
+        if(aabb(player1, platform[i]) && player1.vy > 0) 
+        {
+            player1.y = platform[i].y - player1.h;
+            player1.vy = 0; 
+            player1.onGround = true;
+        }
     }
 }
 
@@ -351,6 +483,10 @@ const IMG_player2 = new Image();
 IMG_player1.src = "./assets/images/player1.png";
 IMG_player2.src = "./assets/images/player2.png";
 
+//set platforms
+const IMG_platform = new Image();
+IMG_platform.src = "./assets/images/platform.png";
+
 function drawMenu() { 
     ctx.drawImage(IMG_title, 0, 0, canvas.width, canvas.height);
     
@@ -390,7 +526,7 @@ function drawNumPlayer() {
     ctx.font = 'bold 20px Papyrus'; 
     ctx.fillText('Press 1', canvas.width / 3 - 35, 195); 
 
-    ctx.drawImage(IMG_player1, 230, 180, 140, 140);
+    ctx.drawImage(IMG_player1, 280, 210, 40, 70);
 
     ctx.textAlign = 'right'; 
     ctx.font = 'bold 25px Papyrus'; 
@@ -399,8 +535,8 @@ function drawNumPlayer() {
     ctx.font = 'bold 20px Papyrus'; 
     ctx.fillText('Press 2', canvas.width / 3 * 2 + 45, 195); 
 
-    ctx.drawImage(IMG_player1, 520, 180, 140, 140);
-    ctx.drawImage(IMG_player2, 570, 180, 140, 140);
+    ctx.drawImage(IMG_player1, 570, 210, 40, 70);
+    ctx.drawImage(IMG_player2, 620, 210, 40, 70);
     
 }
 
@@ -423,11 +559,11 @@ function drawInstructions() {
         ctx.fillText('Race to Collect all 5 of the Pharaoh\'s Jewels!', canvas.width / 2, 130); 
 
         //jewels
-        ctx.drawImage(IMG_diamond, 0, 35);
-        ctx.drawImage(IMG_gold, 125, 35);
-        ctx.drawImage(IMG_green, 250, 35);
-        ctx.drawImage(IMG_purple, 375, 35);
-        ctx.drawImage(IMG_red, 500, 45);
+        ctx.drawImage(IMG_diamond, 250, 150, 40, 40);
+        ctx.drawImage(IMG_gold, 350, 150, 40, 40);
+        ctx.drawImage(IMG_green, canvas.width / 2, 150, 40, 40);
+        ctx.drawImage(IMG_purple, 550, 150, 40, 40);
+        ctx.drawImage(IMG_red, 650, 150, 40, 40);
 
         //WASD
         ctx.font = 'bold 25px Papyrus'; 
@@ -438,11 +574,11 @@ function drawInstructions() {
         ctx.font = 'bold 20px Papyrus'; 
         ctx.fillText('W   -->  Jump', canvas.width / 3 * 2 - 50, 300); 
         ctx.fillText('A   -->  Left', canvas.width / 3 * 2 - 50, 330); 
-        ctx.fillText('S   -->  Jump', canvas.width / 3 * 2 - 50, 360); 
+        ctx.fillText('S   -->  Drop', canvas.width / 3 * 2 - 50, 360); 
         ctx.fillText('D   -->  Right', canvas.width / 3 * 2 - 50, 390); 
 
         //players
-        ctx.drawImage(IMG_player1, canvas.width - 100, -15, 140, 140);
+        ctx.drawImage(IMG_player1, canvas.width - 60, 10, 40, 70);
         
         ctx.fillStyle = '#ffffff'; 
         ctx.textAlign = 'right'; 
@@ -466,11 +602,11 @@ function drawInstructions() {
         ctx.fillText('Race to Collect 5 of the Pharaoh\'s Jewels!', canvas.width / 2, 130); 
 
         //jewels
-        ctx.drawImage(IMG_diamond, 0, 35);
-        ctx.drawImage(IMG_gold, 125, 35);
-        ctx.drawImage(IMG_green, 250, 35);
-        ctx.drawImage(IMG_purple, 375, 35);
-        ctx.drawImage(IMG_red, 500, 45);
+        ctx.drawImage(IMG_diamond, 250, 150, 40, 40);
+        ctx.drawImage(IMG_gold, 350, 150, 40, 40);
+        ctx.drawImage(IMG_green, canvas.width / 2, 150, 40, 40);
+        ctx.drawImage(IMG_purple, 550, 150, 40, 40);
+        ctx.drawImage(IMG_red, 650, 150, 40, 40);
 
         //WASD
         ctx.font = 'bold 25px Papyrus'; 
@@ -481,7 +617,7 @@ function drawInstructions() {
         ctx.font = 'bold 20px Papyrus'; 
         ctx.fillText('W   -->  Jump', canvas.width / 2 - 70, 300); 
         ctx.fillText('A   -->  Left', canvas.width / 2 - 70, 330); 
-        ctx.fillText('S   -->  Jump', canvas.width / 2 - 70, 360); 
+        ctx.fillText('S   -->  Drop', canvas.width / 2 - 70, 360); 
         ctx.fillText('D   -->  Right', canvas.width / 2 - 70, 390); 
 
         //IJKL
@@ -489,12 +625,12 @@ function drawInstructions() {
 
         ctx.fillText('I   -->  Jump', canvas.width / 2 + 310, 300); 
         ctx.fillText('J   -->  Left', canvas.width / 2 + 310, 330); 
-        ctx.fillText('K   -->  Jump', canvas.width / 2 + 310, 360); 
+        ctx.fillText('K   -->  Drop', canvas.width / 2 + 310, 360); 
         ctx.fillText('L   -->  Right', canvas.width / 2 + 310, 390); 
 
         //players
-        ctx.drawImage(IMG_player1, canvas.width - 150, -15, 140, 140);
-        ctx.drawImage(IMG_player2, canvas.width - 100, -15, 140, 140);
+        ctx.drawImage(IMG_player1, canvas.width - 110, 10, 40, 70);
+        ctx.drawImage(IMG_player2, canvas.width - 60, 10, 40, 70);
         
         ctx.fillStyle = '#ffffff'; 
         ctx.textAlign = 'right'; 
@@ -504,8 +640,8 @@ function drawInstructions() {
 }
 
 function drawCharacter(character, image) {
-    const drawW = 140;
-    const drawH = 140;
+    const drawW = 40;
+    const drawH = 70;
 
     if (character.facing === 'left') {
         ctx.save();
@@ -525,13 +661,15 @@ function drawPlaying() {
     //draw ground
     drawGround();
 
-    ctx.fillStyle = '#FFD782'; 
-    ctx.textAlign = 'center'; 
-    ctx.font = 'bold 72px Arial'; 
-    ctx.fillText('PLAYING THE GAME', canvas.width / 2, 140); 
+    //draw platforms (before character so they appear behind)
+    for(let i = 0; i < platform.length; i++)
+    {
+        // ctx.drawImage(IMG_platform, platform[i].x, platform[i].y, platform[i].w, platform[i].h);
+        ctx.fillStyle = '#000000'; 
+        ctx.fillRect(platform[i].x, platform[i].y, platform[i].w, platform[i].h); 
+    }
 
     drawCharacter(player1, IMG_player1);
-    
 } 
 
 function drawGameOver() { 

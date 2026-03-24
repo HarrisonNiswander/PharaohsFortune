@@ -186,6 +186,20 @@ document.addEventListener('keydown', (e) => {
         }
     }
 
+    if( e.code === 'KeyS')
+    {
+        e.preventDefault();
+        if(currentState === STATES.PLAYING)
+        {
+            // drop down
+            if (currentState === STATES.PLAYING) { 
+                player1.y += 90;
+                player1.onGround = false; 
+                
+            }
+        }
+    }
+
     if( e.code === 'KeyD')
     {
         e.preventDefault();
@@ -225,6 +239,20 @@ document.addEventListener('keydown', (e) => {
         {
             player2.vx = -20;
             player2.facing = 'left';
+        }
+    }
+
+    if( e.code === 'KeyK')
+    {
+        e.preventDefault();
+        if(currentState === STATES.PLAYING)
+        {
+            // drop down
+            if (currentState === STATES.PLAYING) { 
+                player2.y += 90;
+                player2.onGround = false; 
+                
+            }
         }
     }
 
@@ -281,10 +309,52 @@ function rectCircle(rect, circle) {
 function spawnPlatform()
 {
     platform.push({
-        x: 115,
+        x: 80,
         y: 280,
-        w: 150,
-        h: 20
+        w: 120,
+        h: 15
+    });
+
+    platform.push({
+        x: canvas.width / 2 - 60,
+        y: 280,
+        w: 120,
+        h: 15
+    });
+
+    platform.push({
+        x: 700,
+        y: 280,
+        w: 120,
+        h: 15
+    });
+
+    platform.push({
+        x: canvas.width / 3 - 60,
+        y: 190,
+        w: 120,
+        h: 15
+    });
+
+    platform.push({
+        x: canvas.width / 3 * 2 - 60,
+        y: 190,
+        w: 120,
+        h: 15
+    });
+
+    platform.push({
+        x: 80,
+        y: 70,
+        w: 120,
+        h: 15
+    });
+
+    platform.push({
+        x: 700,
+        y: 70,
+        w: 120,
+        h: 15
     });
 
 }
@@ -301,7 +371,7 @@ function updatePlaying() {
 
     //x direction
     player1.x += player1.vx;
-    player1.vx *= 0.8;          //friction
+    player1.vx *= 0.85;          //friction
 
     
     //make sure plater doesn't go through floor
@@ -474,7 +544,7 @@ function drawInstructions() {
         ctx.font = 'bold 20px Papyrus'; 
         ctx.fillText('W   -->  Jump', canvas.width / 3 * 2 - 50, 300); 
         ctx.fillText('A   -->  Left', canvas.width / 3 * 2 - 50, 330); 
-        ctx.fillText('S   -->  Jump', canvas.width / 3 * 2 - 50, 360); 
+        ctx.fillText('S   -->  Drop', canvas.width / 3 * 2 - 50, 360); 
         ctx.fillText('D   -->  Right', canvas.width / 3 * 2 - 50, 390); 
 
         //players
@@ -517,7 +587,7 @@ function drawInstructions() {
         ctx.font = 'bold 20px Papyrus'; 
         ctx.fillText('W   -->  Jump', canvas.width / 2 - 70, 300); 
         ctx.fillText('A   -->  Left', canvas.width / 2 - 70, 330); 
-        ctx.fillText('S   -->  Jump', canvas.width / 2 - 70, 360); 
+        ctx.fillText('S   -->  Drop', canvas.width / 2 - 70, 360); 
         ctx.fillText('D   -->  Right', canvas.width / 2 - 70, 390); 
 
         //IJKL
@@ -525,7 +595,7 @@ function drawInstructions() {
 
         ctx.fillText('I   -->  Jump', canvas.width / 2 + 310, 300); 
         ctx.fillText('J   -->  Left', canvas.width / 2 + 310, 330); 
-        ctx.fillText('K   -->  Jump', canvas.width / 2 + 310, 360); 
+        ctx.fillText('K   -->  Drop', canvas.width / 2 + 310, 360); 
         ctx.fillText('L   -->  Right', canvas.width / 2 + 310, 390); 
 
         //players
@@ -564,15 +634,10 @@ function drawPlaying() {
     //draw platforms (before character so they appear behind)
     for(let i = 0; i < platform.length; i++)
     {
-        //ctx.drawImage(IMG_platform, platform[i].x, platform[i].y, platform[i].w, platform[i].h);
+        // ctx.drawImage(IMG_platform, platform[i].x, platform[i].y, platform[i].w, platform[i].h);
         ctx.fillStyle = '#000000'; 
         ctx.fillRect(platform[i].x, platform[i].y, platform[i].w, platform[i].h); 
     }
-
-    ctx.fillStyle = '#FFD782'; 
-    ctx.textAlign = 'center'; 
-    ctx.font = 'bold 72px Arial'; 
-    ctx.fillText('PLAYING THE GAME', canvas.width / 2, 140); 
 
     drawCharacter(player1, IMG_player1);
 } 

@@ -145,6 +145,17 @@ function changeState(newState) {
 //
 //-----------------------------------KEYBOARD INPUTS-----------------------------------
 //
+// Movement variables
+let wPressed = false;
+let aPressed = false;
+let sPressed = false;
+let dPressed = false;
+
+let iPressed = false;
+let jPressed = false;
+let kPressed = false;
+let lPressed = false;
+
 document.addEventListener('keydown', (e) => { 
     if (e.code === 'Space') { 
         e.preventDefault(); 
@@ -218,7 +229,8 @@ document.addEventListener('keydown', (e) => {
         {
             // move left
             if (currentState === STATES.PLAYING) { 
-                player1.vx = -10; 
+                aPressed = true;
+                // player1.vx = -10; 
                 player1.facing = 'left';
 
             }
@@ -246,7 +258,8 @@ document.addEventListener('keydown', (e) => {
         {
             // move right
             if (currentState === STATES.PLAYING) { 
-                player1.vx = 10; 
+                // player1.vx = 10; 
+                dPressed = true;
                 player1.facing = 'right';
                 
             }

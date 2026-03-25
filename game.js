@@ -118,8 +118,9 @@ let player2 = { x: 0, y: 380, w: 140, h: 95};
 //     h: 100
 // };
 
-platform = [];
-jewel = [];
+let platform = [];
+let jewels = [];
+let particlesArray = [];
 
 // highscore = "n/a";
 // secondScore = "n/a";
@@ -127,6 +128,11 @@ jewel = [];
 
 player1_score = 0;
 player_2score = 0;
+
+let player1_landing = false;
+let player2_landing = false;
+
+let currJewelIndex = 0;
 
 function resetGame() { 
     //reset game variables
@@ -152,10 +158,16 @@ function resetGame() {
     };
 
     platform = [];
-    jewel = [];
+    jewels = [];
+    particlesArray = [];
 
     player1_score = 0;
     player2_score = 0;
+
+    player1_landing = false;
+    player2_landing = false;
+
+    currJewelIndex = 0;
 } 
 
 resetGame();
@@ -273,7 +285,7 @@ document.addEventListener('keydown', (e) => {
             if (currentState === STATES.PLAYING && player1.onGround === true) { 
                 player1.vy = -13; 
                 player1.onGround = false; 
-
+                player1_landing = true;
             }
         }
     }
@@ -335,7 +347,7 @@ document.addEventListener('keydown', (e) => {
             if (currentState === STATES.PLAYING && player2.onGround === true) { 
                 player2.vy = -13; 
                 player2.onGround = false; 
-
+                player2_landing = true;
             }
         }
     }
@@ -582,7 +594,6 @@ function spawnJewels()
     // Set colors for the jewels
     for(let i=0; i < maxJewels; i++) {
         randJewel = Math.floor(Math.random() * 5);
-        console.log(randJewel);
         jewelResult[i] = randJewel;
         /*
             Jewel Color
@@ -635,7 +646,7 @@ function spawnJewels()
         }
 
         // Push the jewel to the stack
-        jewel.push({
+        jewels.push({
             c: jewelResult[i],
             x: currJewel_x,
             y: currJewel_y,
@@ -645,9 +656,9 @@ function spawnJewels()
 
     }
 
-    //WHEN PLACING JEWELS INTO THE WORLD USE FORMAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //WHEN PLACING JEWELS INTO THE WORLD USE FORMAT!
     /*
-        jewel.push(
+        jewels.push(
             c: _______,
             x: _______,
             y: _______,
@@ -670,22 +681,23 @@ function updatePlaying() {
     player1.y += player1.vy; 
 
     //x direction
-    // player1.x += player1.vx;
-    // player1.vx *= 0.85;          //friction
-
     if (aPressed && player1.x > 0) {
         player1.x -= 6;
     }
     if (dPressed) {
         player1.x += 6;
     }
-
     
-    //make sure plater doesn't go through floor
+    //make sure player doesn't go through floor
     if (player1.y + player1.h >= GROUND_Y) { 
         player1.y = GROUND_Y - player1.h; 
         player1.vy = 0; 
         player1.onGround = true; 
+
+        if(player1_landing == true) {
+            createLandingEffect(player1.x + (player1.w / 2), player1.y + (player1.h * 3 / 4), 20);
+            player1_landing = false;
+        }
     } 
 
     //make sure they can't jump off top of screen
@@ -717,6 +729,11 @@ function updatePlaying() {
             player1.y = platform[i].y - player1.h;
             player1.vy = 0; 
             player1.onGround = true;
+
+            if(player1_landing == true) {
+                createLandingEffect(player1.x + (player1.w / 2), player1.y + (player1.h * 3 / 4), 20);
+                player1_landing = false;
+            }
         }
     }
 
@@ -734,13 +751,17 @@ function updatePlaying() {
         if (lPressed) {
             player2.x += 6;
         }
-
         
         //make sure player doesn't go through floor
         if (player2.y + player2.h >= GROUND_Y) { 
             player2.y = GROUND_Y - player2.h; 
             player2.vy = 0; 
             player2.onGround = true; 
+
+            if(player2_landing == true) {
+                createLandingEffect(player2.x + (player2.w / 2), player2.y + (player2.h * 3 / 4), 20);
+                player2_landing = false;
+            }
         } 
 
         //make sure they can't jump off top of screen
@@ -785,34 +806,30 @@ function updatePlaying() {
         {
             jewel.splice(i, 1);    //remove
             player1_score++;       //increment score
-            playSfx(sfx.p1_pickup);       //play sound effect
+
+        //check if game over
+        if(player1_score === 5)
+        {
+            changeState(STATES.GAMEOVER);
+        }
+
+    } else if(multiplayer === true)
+    {
+        //player 2 collision with jewel
+        if(aabb(player2, jewels[currJewelIndex]))
+        {
+            jewels.splice(currJewelIndex, 1); //remove
+            player2_score++;    //increment score
+            playSfx(sfx.p2_pickup);       //play sound effect
 
             //check if game over
-            if(player1_score === 5)
+            if(player2_score === 5)
             {
                 changeState(STATES.GAMEOVER);
             }
 
-        } else if(multiplayer === true)
-        {
-            //player 2 collision with jewel
-            if(aabb(player2, jewel[i]))
-            {
-                jewel.splice(i, 1); //remove
-                player2_score++;    //increment score
-                playSfx(sfx.p2_pickup);       //play sound effect
-
-                //check if game over
-                if(player2_score === 5)
-                {
-                    changeState(STATES.GAMEOVER);
-                }
-
-            }
         }
-            
     }
-
 }
 
 //
@@ -1144,16 +1161,9 @@ function drawPlaying() {
         ctx.fillText(currTime, canvas.width / 2, canvas.height - 15); 
     }
     
-    for (const j of jewel) { ////////////////////////////////////////////////////////
-        // ctx.drawImage(IMG_green, j.x, j.y, j.h, j.w);
-        drawJewel(j.c, j.x, j.y, j.h, j.w);
-    }
-    // ctx.drawImage(IMG_diamond, 120, 250, 40, 40);
-    // ctx.drawImage(IMG_gold, canvas.width / 2 - 20, 250, 40, 40);
-    // ctx.drawImage(IMG_green, 740, 250, 40, 40);
-    // ctx.drawImage(IMG_purple, canvas.width / 3 - 20, 160, 40, 40);
-    // ctx.drawImage(IMG_red, canvas.width / 3 * 2 - 20, 160, 40, 40);
-    
+    // Only draw the current Jewel
+    const j = jewels[currJewelIndex];
+    drawJewel(j.c, j.x, j.y, j.h, j.w);
 } 
 
 
@@ -1161,33 +1171,38 @@ function drawPlaying() {
 function drawJewel(num, x, y) {
     if(num == 0){
         //Diamond Selected (0)
-        // return IMG_diamond;
         ctx.drawImage(IMG_diamond, x, y, 40, 40);
     } else if(num == 1) {
         //Gold Selected (1) 
-        // return IMG_gold;
         ctx.drawImage(IMG_gold, x, y, 40, 40);
     } else if(num == 2) {
         //Green Selected (2) 
-        // return IMG_green;
         ctx.drawImage(IMG_green, x, y, 40, 40);
     } else if(num == 3) {
         //Purple Selected (3) 
-        // return IMG_purple;
         ctx.drawImage(IMG_purple, x, y, 40, 40);
     }
     else if(num == 4) {
         //Red Selected (4)
-        // return IMG_red;
         ctx.drawImage(IMG_red, x, y, 40, 40);
     } else {
         console.log("I don't want to draw a jewel!! >:(")
     }
 
+
+    for (let i = 0; i < particlesArray.length; i++) {
+        particlesArray[i].update();
+        particlesArray[i].draw();
+    }
+    // Remove dead particles
+    for (let i = particlesArray.length - 1; i >= 0; i--) {
+        if (particlesArray[i].lifespan <= 0) {
+            particlesArray.splice(i, 1);
+        }
+    }
 }
 
 function drawGameOver() { 
-    // drawPlaying(); 
     ctx.drawImage(IMG_level, 0, 0, canvas.width, canvas.height);
     
     ctx.fillStyle = 'rgb(255, 255, 255)'; 
@@ -1308,3 +1323,37 @@ function gameLoop() {
 } 
 
 gameLoop();
+
+//------------Particles--------------------------//
+class Particle {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 2 + .6;
+        this.speedX = Math.random() * 4 - 1.5;
+        this.speedY = Math.random() * 4 - .5;
+        this.color = 'rgba(255, 255, 255, 0.8)'; // Example color
+        this.lifespan = 30; // Frames to live
+    }
+
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.lifespan--;
+        this.opacity = this.lifespan / 100;
+    }
+
+    draw() {
+        ctx.fillStyle = 'BurlyWood';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+    }
+}
+
+function createLandingEffect(x, y, quantity) {
+    for (let i = 0; i < quantity; i++) {
+        particlesArray.push(new Particle(x, y));
+    }
+}

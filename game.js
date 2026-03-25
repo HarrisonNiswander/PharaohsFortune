@@ -57,7 +57,8 @@ const STATES = {
     NUM_PLAYER: 'number of players', 
     INSTRUCTIONS: 'instructions',
     PLAYING: 'playing', 
-    GAMEOVER: 'gameover' 
+    GAMEOVER: 'gameover', 
+    CREDIT: 'credit'
 }; 
 
 let currentState = STATES.MENU; 
@@ -223,7 +224,13 @@ document.addEventListener('keydown', (e) => {
         if (currentState === STATES.INSTRUCTIONS) { 
             changeState(STATES.PLAYING); 
             return; 
-        } 
+        }
+
+        if (currentState === STATES.CREDIT) { 
+            changeState(STATES.MENU); 
+            return; 
+        }
+
 
     } 
 
@@ -385,6 +392,16 @@ document.addEventListener('keydown', (e) => {
             // player2.vx = 20;
             lPressed = true;
             player2.facing = 'right';
+        }
+    }
+
+    if( e.code === 'KeyC')
+    {
+        e.preventDefault();
+        if(currentState === STATES.GAMEOVER)
+        {
+            changeState(STATES.CREDIT);
+            return;
         }
     }
 }); 
@@ -1134,9 +1151,7 @@ function drawPlaying() {
     //draw platforms (before character so they appear behind)
     for(let i = 0; i < platform.length; i++)
     {
-        // ctx.drawImage(IMG_platform, platform[i].x, platform[i].y, platform[i].w, platform[i].h);
-        ctx.fillStyle = '#000000'; 
-        ctx.fillRect(platform[i].x, platform[i].y, platform[i].w, platform[i].h); 
+        ctx.drawImage(IMG_platform, platform[i].x, platform[i].y, platform[i].w, platform[i].h); 
     }
 
     // Draw the player
@@ -1288,6 +1303,73 @@ function drawGameOver() {
     }
 } 
 
+function drawCredit()
+{
+    ctx.drawImage(IMG_level, 0, 0, canvas.width, canvas.height);
+    
+    ctx.fillStyle = 'rgb(255, 255, 255)'; 
+    ctx.textAlign = 'center'; 
+    ctx.font = 'bold 50px Papyrus'; 
+    ctx.fillText('Credits', canvas.width / 2, 60); 
+    ctx.fillStyle = 'rgb(0, 0, 0)'; 
+    ctx.fillText('Credits', canvas.width / 2+3, 57); 
+
+    //players
+    ctx.drawImage(IMG_player1, canvas.width - 110, 10, 40, 70);
+    ctx.drawImage(IMG_player2, canvas.width - 60, 10, 40, 70);
+
+    //credits
+    //backgrounds
+    ctx.font = 'bold 20px Papyrus'; 
+    ctx.fillText('Backgrounds', canvas.width / 2, 100);
+    ctx.font = 'bold 15px Papyrus';
+    ctx.fillText('Title Picture: Vector Images on Vecteezy.com', canvas.width / 2, 140);
+    ctx.fillText('Level Picture: Image from Craiyon', canvas.width / 2, 170);
+
+    //Jewels
+    ctx.font = 'bold 20px Papyrus'; 
+    ctx.fillText('Jewels', canvas.width / 2, 210);
+    ctx.font = 'bold 15px Papyrus';
+    ctx.fillText('Jewel Pictures: Takoyaki Tech on Shutterstock.com', canvas.width / 2, 240);
+
+    //Platforms
+    ctx.font = 'bold 20px Papyrus'; 
+    ctx.fillText('Platforms', canvas.width / 2, 280);
+    ctx.font = 'bold 15px Papyrus';
+    ctx.fillText('Platform Pictures: Pyramid Ruins Pack by NicoPardo on Itch.io', canvas.width / 2, 310);
+
+    //Music
+    ctx.font = 'bold 20px Papyrus'; 
+    ctx.fillText('Music', canvas.width / 2, 350);
+    ctx.font = 'bold 15px Papyrus';
+    ctx.fillText('Player 1 Sound Effect: freesound_community (Leszek_Szary) on pixabay.com', canvas.width / 2, 380);
+    ctx.fillText('Player 2 Sound Effect: ALEXIS_GAMING_CAM on pixabay.com', canvas.width / 2, 410);
+    ctx.fillText('Background Music: Temple Drama by David Keen on royaltyfreemusic.com (Full Mix & 60s Broadcast Edit)', canvas.width / 2, 440);
+
+    //leave page
+    ctx.textAlign = 'left'; 
+    ctx.font = 'bold 20px Papyrus'; 
+    ctx.fillText('Press Space to return to Menu', 5, 25);
+
+    /*
+        Credits Links
+
+        Backgrounds:
+            Title Picture: https://www.vecteezy.com/vector-art/13210962-pyramids-in-egypt-desert-8bit-pixel-background
+            Level Picture: https://www.craiyon.com/en/image/No6eJah7RlGL5FUbvW3U4A
+
+        Jewels: https://www.shutterstock.com/image-vector/pixel-gems-collection-vintage-90s-arcade-2365963447?trackingId=4f86f818-c06d-417b-8cfb-2f4e03643d3c&listId=searchResults
+
+        Platforms: https://nicopardo.itch.io/pyramid-ruins
+
+        Music:
+            Player 1 Sound Effect: https://pixabay.com/sound-effects/film-special-effects-scale-e6-14577/
+            Player 2 Sound Effect: https://pixabay.com/sound-effects/film-special-effects-item-collected-1-367087/
+            Background Music: https://royaltyfreemusiclibrary.com/tracks?composers=david-keen-243825273
+    */
+
+}
+
 function gameLoop() { 
     updateTransition();
 
@@ -1325,6 +1407,10 @@ function gameLoop() {
             title_music.play().catch(() => {}); 
             drawGameOver(); 
         break; 
+
+        case STATES.CREDIT:
+            drawCredit();
+        break;
     } 
     
     requestAnimationFrame(gameLoop); 

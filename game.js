@@ -121,6 +121,10 @@ let player2 = { x: 0, y: 380, w: 140, h: 95};
 platform = [];
 jewel = [];
 
+// highscore = "n/a";
+// secondScore = "n/a";
+// thirdScore = "n/a";
+
 player1_score = 0;
 player_2score = 0;
 
@@ -180,17 +184,6 @@ function changeState(newState) {
     //     title_music.currentTime = 0; // Restart music from beginning
     // } 
 } 
-
-let startTime;
-function startTimer() {
-    startTime = Date.now(); // Record the start time in milliseconds
-
-}
-
-let endTime;
-function endTimer() {
-    endTime = Date.now();
-}
     
 //
 //-----------------------------------KEYBOARD INPUTS-----------------------------------
@@ -822,6 +815,21 @@ function updatePlaying() {
 
 }
 
+//
+//-----------------------------------TIMER-----------------------------------
+//
+
+let startTime;
+function startTimer() {
+    startTime = Date.now(); // Record the start time in milliseconds
+
+}
+
+let endTime;
+function endTimer() {
+    endTime = Date.now();
+}
+
 function updateTimer() {
     // Calculate elapsed time in seconds
     let elapsedTimeInSeconds = Math.floor((Date.now() - startTime) / 10);
@@ -836,6 +844,27 @@ function updateTimer() {
     
     return formattedTime;
 }
+
+function calcTime(endingTime)
+{
+    // Calculate elapsed time in seconds
+    let elapsedTimeInSeconds = Math.floor((endingTime - startTime) / 10);
+
+    // Format the time as minutes:seconds
+    let minutes = Math.floor((elapsedTimeInSeconds / 100) / 60);
+    let seconds = Math.floor(elapsedTimeInSeconds / 100) % 60;
+    let hund = elapsedTimeInSeconds % 100;
+
+    // Add leading zeros if needed for better display (e.g., 05:02)
+    let formattedTime = minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0') + '.' + hund.toString().padStart(2, '0');
+    
+    return formattedTime;
+}
+
+// function calcHighscore(recentTime)
+// {
+    
+// }
 
 //
 //-----------------------------------IMAGES-----------------------------------
@@ -1161,7 +1190,30 @@ function drawGameOver() {
     //results print for single player
     if(multiplayer === false)
     {
-        
+        ctx.font = 'bold 30px Papyrus'; 
+        ctx.fillText('Time: ' + calcTime(endTime), canvas.width / 2, 160);
+
+        ctx.font = 'bold 25px Papyrus'; 
+        ctx.fillText('To Play Again', canvas.width / 3, 350);
+        ctx.fillText('Press 1', canvas.width / 3, 390);
+
+        ctx.font = 'bold 25px Papyrus'; 
+        ctx.fillText('To Return to Menu', canvas.width / 3 * 2, 350);
+        ctx.fillText('Press 2', canvas.width / 3 * 2, 390);
+
+        //jewels
+        ctx.drawImage(IMG_red, 250, 200, 50, 50);
+        ctx.drawImage(IMG_green, 350, 200, 50, 50);
+        ctx.drawImage(IMG_diamond, canvas.width / 2, 200, 50, 50);
+        ctx.drawImage(IMG_purple, 550, 200, 50, 50);
+        ctx.drawImage(IMG_gold, 650, 200, 50, 50);
+
+        //players
+        ctx.drawImage(IMG_player1, canvas.width - 60, 10, 40, 70);
+
+        ctx.font = 'bold 15px Papyrus'; 
+        ctx.fillText('Press C to view Credits', canvas.width - 90, 440);
+
     }
 
     //results for multiplayer

@@ -299,7 +299,7 @@ document.addEventListener('keydown', (e) => {
         if(currentState === STATES.PLAYING)
         {
             // Implement player jump logic here
-            if (currentState === STATES.PLAYING) { 
+            if (currentState === STATES.PLAYING && player2.onGround === true) { 
                 player2.vy = -13; 
                 player2.onGround = false; 
 

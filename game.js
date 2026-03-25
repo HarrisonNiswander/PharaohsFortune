@@ -801,31 +801,34 @@ function updatePlaying()
     }
 
     // Check collision with current jewel
-    if(aabb(player1, jewels[currJewelIndex]))
-    {
-        jewels.splice(currJewelIndex, 1);    //remove
-        player1_score++;       //increment score
-
-        //check if game over
-        if(player1_score === 5)
+    if(player1_score < 5 && player2_score < 5) {
+        if(aabb(player1, jewels[currJewelIndex]))
         {
-            changeState(STATES.GAMEOVER);
-        }
+            // jewels.splice(currJewelIndex, 1);    //remove
+            currJewelIndex++;
+            player1_score++;       //increment score
 
-    } else if(multiplayer === true)
-    {
-        //player 2 collision with jewel
-        if(aabb(player2, jewels[currJewelIndex]))
-        {
-            jewels.splice(currJewelIndex, 1); //remove
-            player2_score++;    //increment score
-    
             //check if game over
-            if(player2_score === 5)
+            if(player1_score === 5)
             {
                 changeState(STATES.GAMEOVER);
             }
 
+        } else if(multiplayer === true)
+        {
+            //player 2 collision with jewel
+            if(aabb(player2, jewels[currJewelIndex]))
+            {
+                // jewels.splice(currJewelIndex, 1); //remove
+                player2_score++;    //increment score
+                currJewelIndex++;
+        
+                //check if game over
+                if(player2_score === 5)
+                {
+                    changeState(STATES.GAMEOVER);
+                }
+            }
         }
     }
 }
@@ -1161,7 +1164,10 @@ function drawPlaying() {
     
     // Only draw the current Jewel
     const j = jewels[currJewelIndex];
-    drawJewel(j.c, j.x, j.y, j.h, j.w);
+    if(j)
+    {
+        drawJewel(j.c, j.x, j.y, j.h, j.w);
+    }
 } 
 
 
@@ -1201,6 +1207,7 @@ function drawJewel(num, x, y) {
 }
 
 function drawGameOver() { 
+    console.log("Game is over!!!");
     ctx.drawImage(IMG_level, 0, 0, canvas.width, canvas.height);
     
     ctx.fillStyle = 'rgb(255, 255, 255)'; 
@@ -1306,8 +1313,11 @@ function gameLoop() {
             title_music.pause();
             level_music.play().catch(() => {}); 
             updatePlaying(); 
-            drawPlaying(); 
-            drawTransitionOverlay(); 
+            // Make sure we are still supposed to be playing
+            if(STATES.PLAYING) {
+                drawPlaying(); 
+                drawTransitionOverlay(); 
+            }
         break; 
 
         case STATES.GAMEOVER: 

@@ -30,6 +30,25 @@ const ctx = canvas.getContext('2d');
         unlockAudioAndStartMusic();
     }, { once: false });
 
+    //sound effects
+    const sfx = {
+        p1_pickup: new Audio('assets/audio/p1_pickup.mp3'),
+        p2_pickup: new Audio('assets/audio/p2_pickup.mp3')
+    };
+
+    sfx.p1_pickup.volume = 0.45;
+    sfx.p2_pickup.volume = 0.45;
+    
+
+    function playSfx(sound) {
+        try {
+            sound.currentTime = 0; // restart so repeated hits can replay
+            sound.play();
+        } catch (e) {
+            // ignore audio errors during early development
+        }
+    }
+
 //
 //-----------------------------------GAME STATES-----------------------------------
 //
@@ -103,6 +122,10 @@ let platform = [];
 let jewels = [];
 let particlesArray = [];
 
+// highscore = "n/a";
+// secondScore = "n/a";
+// thirdScore = "n/a";
+
 player1_score = 0;
 player_2score = 0;
 
@@ -158,24 +181,21 @@ function changeState(newState) {
         spawnPlatform();
         spawnJewels();
         startTimer();
+        level_music.currentTime = 0; // Restart music from beginning
     } 
     
     if (newState === STATES.GAMEOVER) { 
         //highScore = Math.max(highScore, Math.floor(score)); 
+        title_music.currentTime = 0; // Restart music from beginning
         endTimer();
     } 
+
+    //if we want music to restart when returning to menu after gameover
+
+    // if (newState === STATES.MENU) { 
+    //     title_music.currentTime = 0; // Restart music from beginning
+    // } 
 } 
-
-let startTime;
-function startTimer() {
-    startTime = Date.now(); // Record the start time in milliseconds
-
-}
-
-let endTime;
-function endTimer() {
-    endTime = Date.now();
-}
     
 //
 //-----------------------------------KEYBOARD INPUTS-----------------------------------
@@ -204,16 +224,6 @@ document.addEventListener('keydown', (e) => {
             changeState(STATES.PLAYING); 
             return; 
         } 
-    
-        // if (currentState === STATES.PLAYING) { 
-        //     return; 
-
-        // } 
-    
-        // if (currentState === STATES.GAMEOVER) { 
-        //     changeState(STATES.MENU); 
-
-        // } 
 
     } 
 
@@ -226,6 +236,12 @@ document.addEventListener('keydown', (e) => {
             return; 
         }
 
+        //play again
+        if (currentState === STATES.GAMEOVER) { 
+            changeState(STATES.PLAYING); 
+            return; 
+        }
+
     }
 
     if (e.code === 'Digit2') { 
@@ -234,6 +250,23 @@ document.addEventListener('keydown', (e) => {
         if (currentState === STATES.NUM_PLAYER) { 
             multiplayer = true;
             changeState(STATES.INSTRUCTIONS); 
+            return; 
+        }
+
+        //return to menu after game over
+        if (currentState === STATES.GAMEOVER) { 
+            changeState(STATES.MENU); 
+            return; 
+        }
+
+    }
+
+    //development purposes only
+    if (e.code === 'Digit3') { 
+        e.preventDefault(); 
+
+        if (currentState === STATES.MENU) { 
+            changeState(STATES.GAMEOVER); 
             return; 
         }
 
@@ -311,7 +344,7 @@ document.addEventListener('keydown', (e) => {
         if(currentState === STATES.PLAYING)
         {
             // Implement player jump logic here
-            if (currentState === STATES.PLAYING) { 
+            if (currentState === STATES.PLAYING && player2.onGround === true) { 
                 player2.vy = -13; 
                 player2.onGround = false; 
                 player2_landing = true;
@@ -641,7 +674,8 @@ function spawnJewels()
 //-----------------------------------UPDATE PLAYING-----------------------------------
 //
 
-function updatePlaying() { 
+function updatePlaying() 
+{ 
     // Physics 
     //y direction
     player1.vy += GRAVITY; 
@@ -760,13 +794,10 @@ function updatePlaying() {
                 player2.y = platform[i].y - player2.h;
                 player2.vy = 0; 
                 player2.onGround = true;
-
-                if(player2_landing == true) {
-                    createLandingEffect(player2.x + (player2.w / 2), player2.y + (player2.h * 3 / 4), 20);
-                    player2_landing = false;
-                }
             }
         }
+
+        
     }
 
     // Check collision with current jewel
@@ -799,6 +830,21 @@ function updatePlaying() {
     }
 }
 
+//
+//-----------------------------------TIMER-----------------------------------
+//
+
+let startTime;
+function startTimer() {
+    startTime = Date.now(); // Record the start time in milliseconds
+
+}
+
+let endTime;
+function endTimer() {
+    endTime = Date.now();
+}
+
 function updateTimer() {
     // Calculate elapsed time in seconds
     let elapsedTimeInSeconds = Math.floor((Date.now() - startTime) / 10);
@@ -812,6 +858,42 @@ function updateTimer() {
     let formattedTime = minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0') + '.' + hund.toString().padStart(2, '0');
     
     return formattedTime;
+}
+
+function calcTime(endingTime)
+{
+    // Calculate elapsed time in seconds
+    let elapsedTimeInSeconds = Math.floor((endingTime - startTime) / 10);
+
+    // Format the time as minutes:seconds
+    let minutes = Math.floor((elapsedTimeInSeconds / 100) / 60);
+    let seconds = Math.floor(elapsedTimeInSeconds / 100) % 60;
+    let hund = elapsedTimeInSeconds % 100;
+
+    // Add leading zeros if needed for better display (e.g., 05:02)
+    let formattedTime = minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0') + '.' + hund.toString().padStart(2, '0');
+    
+    return formattedTime;
+}
+
+// function calcHighscore(recentTime)
+// {
+    
+// }
+
+//
+//-----------------------------------Find Winner-----------------------------------
+//
+function findWinner()
+{
+    if(player1_score > player2_score)
+    {
+        return 1;
+    }
+
+    else{
+        return 2;
+    }
 }
 
 //
@@ -1121,13 +1203,12 @@ function drawJewel(num, x, y) {
 function drawGameOver() { 
     ctx.drawImage(IMG_level, 0, 0, canvas.width, canvas.height);
     
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.55)'; 
-    ctx.fillRect(0, 0, canvas.width, canvas.height); 
-    
-    ctx.fillStyle = '#ff4d4d'; 
+    ctx.fillStyle = 'rgb(255, 255, 255)'; 
     ctx.textAlign = 'center'; 
-    ctx.font = 'bold 72px Arial'; 
-    ctx.fillText('GAME OVER', canvas.width / 2, 140); 
+    ctx.font = 'bold 70px Papyrus'; 
+    ctx.fillText('Results', canvas.width / 2, 100); 
+    ctx.fillStyle = 'rgb(0, 0, 0)'; 
+    ctx.fillText('Results', canvas.width / 2+3, 97); 
     
     //ctx.fillStyle = '#ffffff'; 
     //ctx.font = '24px Arial'; 
@@ -1137,12 +1218,66 @@ function drawGameOver() {
     //results print for single player
     if(multiplayer === false)
     {
+        ctx.font = 'bold 30px Papyrus'; 
+        ctx.fillText('Time: ' + calcTime(endTime), canvas.width / 2, 160);
+
+        ctx.font = 'bold 25px Papyrus'; 
+        ctx.fillText('To Play Again', canvas.width / 3, 350);
+        ctx.fillText('Press 1', canvas.width / 3, 390);
+
+        ctx.font = 'bold 25px Papyrus'; 
+        ctx.fillText('To Return to Menu', canvas.width / 3 * 2, 350);
+        ctx.fillText('Press 2', canvas.width / 3 * 2, 390);
+
+        //jewels
+        ctx.drawImage(IMG_red, 250, 200, 50, 50);
+        ctx.drawImage(IMG_green, 350, 200, 50, 50);
+        ctx.drawImage(IMG_diamond, canvas.width / 2, 200, 50, 50);
+        ctx.drawImage(IMG_purple, 550, 200, 50, 50);
+        ctx.drawImage(IMG_gold, 650, 200, 50, 50);
+
+        //players
+        ctx.drawImage(IMG_player1, canvas.width - 60, 10, 40, 70);
+
+        ctx.font = 'bold 15px Papyrus'; 
+        ctx.fillText('Press C to view Credits', canvas.width - 90, 440);
 
     }
 
     //results for multiplayer
     else{
-        
+        ctx.textAlign = 'center'; 
+        ctx.font = 'bold 30px Papyrus'; 
+        ctx.fillText('Player 1 Jewels:     ' + player1_score, canvas.width / 5, 160);
+        ctx.fillText('Player 2 Jewels:     ' + player2_score, canvas.width / 5 * 4, 160);
+
+        ctx.fillStyle = 'rgb(255, 255, 255)'; 
+        ctx.font = 'bold 35px Papyrus';
+        ctx.fillText('Player ' + findWinner() + ' Wins!', canvas.width / 2, 215);
+        ctx.fillStyle = 'rgb(0, 0, 0)'; 
+        ctx.fillText('Player ' + findWinner() + ' Wins!', canvas.width / 2 + 3, 212);
+
+        ctx.font = 'bold 25px Papyrus'; 
+        ctx.fillText('To Play Again', canvas.width / 3, 350);
+        ctx.fillText('Press 1', canvas.width / 3, 390);
+
+        ctx.font = 'bold 25px Papyrus'; 
+        ctx.fillText('To Return to Menu', canvas.width / 3 * 2, 350);
+        ctx.fillText('Press 2', canvas.width / 3 * 2, 390);
+
+        //jewels
+        ctx.drawImage(IMG_red, 250, 240, 50, 50);
+        ctx.drawImage(IMG_green, 350, 240, 50, 50);
+        ctx.drawImage(IMG_diamond, canvas.width / 2, 240, 50, 50);
+        ctx.drawImage(IMG_purple, 550, 240, 50, 50);
+        ctx.drawImage(IMG_gold, 650, 240, 50, 50);
+
+        //players
+        ctx.drawImage(IMG_player1, canvas.width - 110, 10, 40, 70);
+        ctx.drawImage(IMG_player2, canvas.width - 60, 10, 40, 70);
+
+        ctx.font = 'bold 15px Papyrus'; 
+        ctx.fillText('Press C to view Credits', canvas.width - 90, 440);
     }
 } 
 
@@ -1176,6 +1311,8 @@ function gameLoop() {
         break; 
 
         case STATES.GAMEOVER: 
+            level_music.pause();
+            title_music.play().catch(() => {}); 
             drawGameOver(); 
         break; 
     } 
@@ -1217,4 +1354,5 @@ function createLandingEffect(x, y, quantity) {
     for (let i = 0; i < quantity; i++) {
         particlesArray.push(new Particle(x, y));
     }
-}
+} 
+

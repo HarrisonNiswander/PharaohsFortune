@@ -150,7 +150,7 @@ function changeState(newState) {
     
     if (newState === STATES.GAMEOVER) { 
         //highScore = Math.max(highScore, Math.floor(score)); 
-        stopTimer();
+        endTimer();
     } 
 } 
 
@@ -753,16 +753,38 @@ function updatePlaying() {
                 player2.onGround = true;
             }
         }
+
+        
     }
 
     //check collisions with jewels
-    //check collision with player and platforms
     for(let i = 0; i < jewel.length; i++){
-        //if(aabb(player1, jewel[i]) || aabb(player2, jewel[i]))
+        //player 1 collision with jewel
         if(aabb(player1, jewel[i]))
         {
-            jewel.splice(i, 1);
-            player1_score++;
+            jewel.splice(i, 1);    //remove
+            player1_score++;       //increment score
+
+            //check if game over
+            if(player1_score === 5)
+            {
+                changeState(STATES.GAMEOVER);
+            }
+
+        }
+
+        //player 2 collision with jewel
+        if(aabb(player2, jewel[i]))
+        {
+            jewel.splice(i, 1); //remove
+            player2_score++;    //increment score
+
+            //check if game over
+            if(player2_score === 5)
+            {
+                changeState(STATES.GAMEOVER);
+            }
+
         }
     }
 
@@ -1105,7 +1127,6 @@ function gameLoop() {
         break; 
 
         case STATES.GAMEOVER: 
-
             drawGameOver(); 
         break; 
     } 

@@ -674,7 +674,8 @@ function spawnJewels()
 //-----------------------------------UPDATE PLAYING-----------------------------------
 //
 
-function updatePlaying() { 
+function updatePlaying() 
+{ 
     // Physics 
     //y direction
     player1.vy += GRAVITY; 
@@ -799,13 +800,11 @@ function updatePlaying() {
         
     }
 
-    //check collisions with jewels
-    for(let i = 0; i < jewel.length; i++){
-        //player 1 collision with jewel
-        if(aabb(player1, jewel[i]))
-        {
-            jewel.splice(i, 1);    //remove
-            player1_score++;       //increment score
+    // Check collision with current jewel
+    if(aabb(player1, jewels[currJewelIndex]))
+    {
+        jewels.splice(currJewelIndex, 1);    //remove
+        player1_score++;       //increment score
 
         //check if game over
         if(player1_score === 5)
@@ -820,8 +819,7 @@ function updatePlaying() {
         {
             jewels.splice(currJewelIndex, 1); //remove
             player2_score++;    //increment score
-            playSfx(sfx.p2_pickup);       //play sound effect
-
+    
             //check if game over
             if(player2_score === 5)
             {
@@ -1356,4 +1354,5 @@ function createLandingEffect(x, y, quantity) {
     for (let i = 0; i < quantity; i++) {
         particlesArray.push(new Particle(x, y));
     }
-}
+} 
+

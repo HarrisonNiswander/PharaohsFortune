@@ -683,10 +683,10 @@ function updatePlaying()
 
     //x direction
     if (aPressed && player1.x > 0) {
-        player1.x -= 6;
+        player1.x -= 4;
     }
     if (dPressed) {
-        player1.x += 6;
+        player1.x += 4;
     }
     
     //make sure player doesn't go through floor
@@ -747,10 +747,10 @@ function updatePlaying()
 
         //x direction
         if (jPressed && player2.x > 0) {
-            player2.x -= 6;
+            player2.x -= 4;
         }
         if (lPressed) {
-            player2.x += 6;
+            player2.x += 4;
         }
         
         //make sure player doesn't go through floor

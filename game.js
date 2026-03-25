@@ -1131,9 +1131,7 @@ function drawPlaying() {
     //draw platforms (before character so they appear behind)
     for(let i = 0; i < platform.length; i++)
     {
-        // ctx.drawImage(IMG_platform, platform[i].x, platform[i].y, platform[i].w, platform[i].h);
-        ctx.fillStyle = '#000000'; 
-        ctx.fillRect(platform[i].x, platform[i].y, platform[i].w, platform[i].h); 
+        ctx.drawImage(IMG_platform, platform[i].x, platform[i].y, platform[i].w, platform[i].h); 
     }
 
     // Draw the player
@@ -1159,9 +1157,9 @@ function drawPlaying() {
         ctx.fillText(currTime, canvas.width / 2, canvas.height - 15); 
     }
     
-    // Only draw the current Jewel
-    const j = jewels[currJewelIndex];
-    drawJewel(j.c, j.x, j.y, j.h, j.w);
+        // Only draw the current Jewel
+        const j = jewels[currJewelIndex];
+        drawJewel(j.c, j.x, j.y, j.h, j.w);
 } 
 
 

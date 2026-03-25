@@ -509,14 +509,17 @@ function spawnJewels()
 {
     //determine location
     const uniqueNumbers = new Set();
+    const maxJewels = 9;
+    let currJewel_x;
+    let currJewel_y;
 
-    while (uniqueNumbers.size < 5) {
+    while (uniqueNumbers.size <= maxJewels) {
         const r = Math.floor(Math.random() * 10);
         uniqueNumbers.add(r);
     }
 
     // Convert Set back to an Array
-    const result = Array.from(uniqueNumbers);
+    const jewelLoc = Array.from(uniqueNumbers);
 
     /*
         Possible Jewel Locations (10)
@@ -540,45 +543,69 @@ function spawnJewels()
     */
 
     //determine jewel color that is spawned (random) 
-    const jewelResult = Array(9);
+    const jewelResult = Array(maxJewels);
     let randJewel;
 
-    for(let i=0; i<jewelResult.length; i++) {
+    // Set colors for the jewels
+    for(let i=0; i < maxJewels; i++) {
         randJewel = Math.floor(Math.random() * 5);
-        console.log(randJewel)
-        uniqueNumbers.add(jewelResult);
+        console.log(randJewel);
+        jewelResult[i] = randJewel;
+        /*
+            Jewel Color
+            0 - Diamond
+            1 - Gold 
+            2 - Green
+            3 - Purple
+            4 - Red
+        */
     }
-
-    /*
-        Jewel Color
-        0 - Diamond
-        1 - Gold 
-        2 - Green
-        3 - Purple
-        4 - Red
-    */
-
-    // HELLO HARRISON just to test the collisions and the score count, 
-    // I am spawning every gem at once. 
-    // Or not I do not have a lot of time
 
     //place jewel at location of each chosen location in result array
     //only place next jewel once one before is picked up
-    for(let i=0; i<jewelResult.length; i++)
+    for(let i=0; i < maxJewels; i++)
     {
-        let jewelIMG;
-        jewelIMG = setColor(jewelResult[i]);
+        // See where the jewel spawns
+        if(jewelLoc[i] == 0) {
+            currJewel_x = 120;
+            currJewel_y = 250;
+        } else if(jewelLoc[i] == 1) {
+            currJewel_x = canvas.width / 2 - 20;
+            currJewel_y = 250;
+        } else if(jewelLoc[i] == 2) {
+            currJewel_x = 740;
+            currJewel_y = 250;
+        } else if(jewelLoc[i] == 3) {
+            currJewel_x = canvas.width / 3 - 20;
+            currJewel_y = 160;
+        } else if(jewelLoc[i] == 4) {
+            currJewel_x = canvas.width / 3 * 2 - 20;
+            currJewel_y = 160;
+        } else if(jewelLoc[i] == 5) {
+            currJewel_x = 120;
+            currJewel_y = 60;
+        } else if(jewelLoc[i] == 6) {
+            currJewel_x = 740;
+            currJewel_y = 60;
+        } else if(jewelLoc[i] == 7) {
+            currJewel_x = canvas.width / 3 * 2 - 20;
+            currJewel_y = 350;
+        } else if(jewelLoc[i] == 8) {
+            currJewel_x = 270;
+            currJewel_y = 350;
+        } else if(jewelLoc[i] == 9) {
+            currJewel_x = canvas.width / 2 - 20;
+            currJewel_y = 50;
+        } else {
+            currJewel_x = 250;
+            currJewel_y = 150;
+        }
 
+        // Push the jewel to the stack
         jewel.push({
-            x: 120,
-            y: 250,
-            w: 40,
-            h: 40
-        });
-
-        jewel.push({
-            x: canvas.width / 2 - 20,
-            y: 50,
+            c: jewelResult[i],
+            x: currJewel_x,
+            y: currJewel_y,
             w: 40,
             h: 40
         });
@@ -588,6 +615,7 @@ function spawnJewels()
     //WHEN PLACING JEWELS INTO THE WORLD USE FORMAT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     /*
         jewel.push(
+            c: _______,
             x: _______,
             y: _______,
             w: 40,
@@ -595,47 +623,7 @@ function spawnJewels()
         );
     */
 
-    jewel.push({
-        x: 120,
-        y: 250,
-        w: 40,
-        h: 40
-    });   
-
-
 }
-
-function setColor(num) {
-    switch(num)
-    {
-        case 0:
-            //Diamond Selected (0)
-            return IMG_diamond;
-        break;
-
-        case 1:
-            //Gold Selected (1) 
-            return IMG_gold;
-        break;
-
-        case 2: 
-            //Green Selected (2) 
-            return IMG_green;
-        break;
-
-        case 3:
-            //Purple Selected (3) 
-            return IMG_purple;
-        break;
-
-        default:
-            //Red Selected (4)
-            return IMG_red;
-
-    }
-
-}
-
 
 
 //
@@ -715,7 +703,7 @@ function updatePlaying() {
         }
 
         
-        //make sure plater doesn't go through floor
+        //make sure player doesn't go through floor
         if (player2.y + player2.h >= GROUND_Y) { 
             player2.y = GROUND_Y - player2.h; 
             player2.vy = 0; 
@@ -1046,8 +1034,9 @@ function drawPlaying() {
         ctx.fillText(currTime, canvas.width / 2, canvas.height - 15); 
     }
     
-    for (const j of jewel) { 
-        ctx.drawImage(IMG_green, j.x, j.y, j.h, j.w);
+    for (const j of jewel) { ////////////////////////////////////////////////////////
+        // ctx.drawImage(IMG_green, j.x, j.y, j.h, j.w);
+        drawJewel(j.c, j.x, j.y, j.h, j.w);
     }
     // ctx.drawImage(IMG_diamond, 120, 250, 40, 40);
     // ctx.drawImage(IMG_gold, canvas.width / 2 - 20, 250, 40, 40);
@@ -1056,6 +1045,36 @@ function drawPlaying() {
     // ctx.drawImage(IMG_red, canvas.width / 3 * 2 - 20, 160, 40, 40);
     
 } 
+
+
+// This is called from the Draw section!!!!!!
+function drawJewel(num, x, y) {
+    if(num == 0){
+        //Diamond Selected (0)
+        // return IMG_diamond;
+        ctx.drawImage(IMG_diamond, x, y, 40, 40);
+    } else if(num == 1) {
+        //Gold Selected (1) 
+        // return IMG_gold;
+        ctx.drawImage(IMG_gold, x, y, 40, 40);
+    } else if(num == 2) {
+        //Green Selected (2) 
+        // return IMG_green;
+        ctx.drawImage(IMG_green, x, y, 40, 40);
+    } else if(num == 3) {
+        //Purple Selected (3) 
+        // return IMG_purple;
+        ctx.drawImage(IMG_purple, x, y, 40, 40);
+    }
+    else if(num == 4) {
+        //Red Selected (4)
+        // return IMG_red;
+        ctx.drawImage(IMG_red, x, y, 40, 40);
+    } else {
+        console.log("I don't want to draw a jewel!! >:(")
+    }
+
+}
 
 function drawGameOver() { 
     // drawPlaying(); 

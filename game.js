@@ -30,6 +30,25 @@ const ctx = canvas.getContext('2d');
         unlockAudioAndStartMusic();
     }, { once: false });
 
+    //sound effects
+    const sfx = {
+        p1_pickup: new Audio('assets/audio/p1_pickup.mp3'),
+        p2_pickup: new Audio('assets/audio/p2_pickup.mp3')
+    };
+
+    sfx.p1_pickup.volume = 0.45;
+    sfx.p2_pickup.volume = 0.45;
+    
+
+    function playSfx(sound) {
+        try {
+            sound.currentTime = 0; // restart so repeated hits can replay
+            sound.play();
+        } catch (e) {
+            // ignore audio errors during early development
+        }
+    }
+
 //
 //-----------------------------------GAME STATES-----------------------------------
 //
@@ -156,7 +175,7 @@ function changeState(newState) {
     } 
 
     //if we want music to restart when returning to menu after gameover
-    
+
     // if (newState === STATES.MENU) { 
     //     title_music.currentTime = 0; // Restart music from beginning
     // } 
@@ -232,6 +251,17 @@ document.addEventListener('keydown', (e) => {
         //return to menu after game over
         if (currentState === STATES.GAMEOVER) { 
             changeState(STATES.MENU); 
+            return; 
+        }
+
+    }
+
+    //development purposes only
+    if (e.code === 'Digit3') { 
+        e.preventDefault(); 
+
+        if (currentState === STATES.MENU) { 
+            changeState(STATES.GAMEOVER); 
             return; 
         }
 
@@ -762,6 +792,7 @@ function updatePlaying() {
         {
             jewel.splice(i, 1);    //remove
             player1_score++;       //increment score
+            playSfx(sfx.p1_pickup);       //play sound effect
 
             //check if game over
             if(player1_score === 5)
@@ -776,6 +807,7 @@ function updatePlaying() {
             {
                 jewel.splice(i, 1); //remove
                 player2_score++;    //increment score
+                playSfx(sfx.p2_pickup);       //play sound effect
 
                 //check if game over
                 if(player2_score === 5)
@@ -1114,13 +1146,12 @@ function drawGameOver() {
     // drawPlaying(); 
     ctx.drawImage(IMG_level, 0, 0, canvas.width, canvas.height);
     
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.55)'; 
-    ctx.fillRect(0, 0, canvas.width, canvas.height); 
-    
-    ctx.fillStyle = '#ff4d4d'; 
+    ctx.fillStyle = 'rgb(255, 255, 255)'; 
     ctx.textAlign = 'center'; 
-    ctx.font = 'bold 72px Arial'; 
-    ctx.fillText('GAME OVER', canvas.width / 2, 140); 
+    ctx.font = 'bold 70px Papyrus'; 
+    ctx.fillText('Results', canvas.width / 2, 100); 
+    ctx.fillStyle = 'rgb(0, 0, 0)'; 
+    ctx.fillText('Results', canvas.width / 2+3, 97); 
     
     //ctx.fillStyle = '#ffffff'; 
     //ctx.font = '24px Arial'; 
@@ -1130,7 +1161,7 @@ function drawGameOver() {
     //results print for single player
     if(multiplayer === false)
     {
-
+        
     }
 
     //results for multiplayer

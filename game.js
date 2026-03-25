@@ -771,21 +771,23 @@ function updatePlaying() {
                 changeState(STATES.GAMEOVER);
             }
 
-        }
-
-        //player 2 collision with jewel
-        if(aabb(player2, jewel[i]))
+        } else if(multiplayer === true)
         {
-            jewel.splice(i, 1); //remove
-            player2_score++;    //increment score
-
-            //check if game over
-            if(player2_score === 5)
+            //player 2 collision with jewel
+            if(aabb(player2, jewel[i]))
             {
-                changeState(STATES.GAMEOVER);
-            }
+                jewel.splice(i, 1); //remove
+                player2_score++;    //increment score
 
+                //check if game over
+                if(player2_score === 5)
+                {
+                    changeState(STATES.GAMEOVER);
+                }
+
+            }
         }
+            
     }
 
 }
@@ -1095,6 +1097,17 @@ function drawGameOver() {
     //ctx.font = '24px Arial'; 
     //ctx.fillText(`Final Score: ${Math.floor(score)}`, canvas.width / 2, 205); 
     //ctx.fillText('Press SPACE for menu', canvas.width / 2, 250); 
+
+    //results print for single player
+    if(multiplayer === false)
+    {
+
+    }
+
+    //results for multiplayer
+    else{
+        
+    }
 } 
 
 function gameLoop() { 

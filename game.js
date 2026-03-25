@@ -101,9 +101,13 @@ let player2 = { x: 0, y: 380, w: 140, h: 95};
 
 let platform = [];
 let jewels = [];
+let particlesArray = [];
 
 player1_score = 0;
 player_2score = 0;
+
+let player1_landing = false;
+let player2_landing = false;
 
 let currJewelIndex = 0;
 
@@ -132,9 +136,13 @@ function resetGame() {
 
     platform = [];
     jewels = [];
+    particlesArray = [];
 
     player1_score = 0;
     player2_score = 0;
+
+    player1_landing = false;
+    player2_landing = false;
 
     currJewelIndex = 0;
 } 
@@ -244,7 +252,7 @@ document.addEventListener('keydown', (e) => {
             if (currentState === STATES.PLAYING && player1.onGround === true) { 
                 player1.vy = -13; 
                 player1.onGround = false; 
-
+                player1_landing = true;
             }
         }
     }
@@ -306,7 +314,7 @@ document.addEventListener('keydown', (e) => {
             if (currentState === STATES.PLAYING) { 
                 player2.vy = -13; 
                 player2.onGround = false; 
-
+                player2_landing = true;
             }
         }
     }
@@ -647,11 +655,16 @@ function updatePlaying() {
         player1.x += 6;
     }
     
-    //make sure plater doesn't go through floor
+    //make sure player doesn't go through floor
     if (player1.y + player1.h >= GROUND_Y) { 
         player1.y = GROUND_Y - player1.h; 
         player1.vy = 0; 
         player1.onGround = true; 
+
+        if(player1_landing == true) {
+            createLandingEffect(player1.x + (player1.w / 2), player1.y + (player1.h * 3 / 4), 20);
+            player1_landing = false;
+        }
     } 
 
     //make sure they can't jump off top of screen
@@ -683,6 +696,11 @@ function updatePlaying() {
             player1.y = platform[i].y - player1.h;
             player1.vy = 0; 
             player1.onGround = true;
+
+            if(player1_landing == true) {
+                createLandingEffect(player1.x + (player1.w / 2), player1.y + (player1.h * 3 / 4), 20);
+                player1_landing = false;
+            }
         }
     }
 
@@ -706,6 +724,11 @@ function updatePlaying() {
             player2.y = GROUND_Y - player2.h; 
             player2.vy = 0; 
             player2.onGround = true; 
+
+            if(player2_landing == true) {
+                createLandingEffect(player2.x + (player2.w / 2), player2.y + (player2.h * 3 / 4), 20);
+                player2_landing = false;
+            }
         } 
 
         //make sure they can't jump off top of screen
@@ -737,6 +760,11 @@ function updatePlaying() {
                 player2.y = platform[i].y - player2.h;
                 player2.vy = 0; 
                 player2.onGround = true;
+
+                if(player2_landing == true) {
+                    createLandingEffect(player2.x + (player2.w / 2), player2.y + (player2.h * 3 / 4), 20);
+                    player2_landing = false;
+                }
             }
         }
     }
@@ -1077,6 +1105,17 @@ function drawJewel(num, x, y) {
         console.log("I don't want to draw a jewel!! >:(")
     }
 
+
+    for (let i = 0; i < particlesArray.length; i++) {
+        particlesArray[i].update();
+        particlesArray[i].draw();
+    }
+    // Remove dead particles
+    for (let i = particlesArray.length - 1; i >= 0; i--) {
+        if (particlesArray[i].lifespan <= 0) {
+            particlesArray.splice(i, 1);
+        }
+    }
 }
 
 function drawGameOver() { 
@@ -1145,3 +1184,37 @@ function gameLoop() {
 } 
 
 gameLoop();
+
+//------------Particles--------------------------//
+class Particle {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 2 + .6;
+        this.speedX = Math.random() * 4 - 1.5;
+        this.speedY = Math.random() * 4 - .5;
+        this.color = 'rgba(255, 255, 255, 0.8)'; // Example color
+        this.lifespan = 30; // Frames to live
+    }
+
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.lifespan--;
+        this.opacity = this.lifespan / 100;
+    }
+
+    draw() {
+        ctx.fillStyle = 'BurlyWood';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+    }
+}
+
+function createLandingEffect(x, y, quantity) {
+    for (let i = 0; i < quantity; i++) {
+        particlesArray.push(new Particle(x, y));
+    }
+}

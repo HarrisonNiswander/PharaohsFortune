@@ -146,12 +146,20 @@ function changeState(newState) {
         spawnPlatform();
         spawnJewels();
         startTimer();
+        level_music.currentTime = 0; // Restart music from beginning
     } 
     
     if (newState === STATES.GAMEOVER) { 
         //highScore = Math.max(highScore, Math.floor(score)); 
+        title_music.currentTime = 0; // Restart music from beginning
         endTimer();
     } 
+
+    //if we want music to restart when returning to menu after gameover
+    
+    // if (newState === STATES.MENU) { 
+    //     title_music.currentTime = 0; // Restart music from beginning
+    // } 
 } 
 
 let startTime;
@@ -192,16 +200,6 @@ document.addEventListener('keydown', (e) => {
             changeState(STATES.PLAYING); 
             return; 
         } 
-    
-        // if (currentState === STATES.PLAYING) { 
-        //     return; 
-
-        // } 
-    
-        // if (currentState === STATES.GAMEOVER) { 
-        //     changeState(STATES.MENU); 
-
-        // } 
 
     } 
 
@@ -214,6 +212,12 @@ document.addEventListener('keydown', (e) => {
             return; 
         }
 
+        //play again
+        if (currentState === STATES.GAMEOVER) { 
+            changeState(STATES.PLAYING); 
+            return; 
+        }
+
     }
 
     if (e.code === 'Digit2') { 
@@ -222,6 +226,12 @@ document.addEventListener('keydown', (e) => {
         if (currentState === STATES.NUM_PLAYER) { 
             multiplayer = true;
             changeState(STATES.INSTRUCTIONS); 
+            return; 
+        }
+
+        //return to menu after game over
+        if (currentState === STATES.GAMEOVER) { 
+            changeState(STATES.MENU); 
             return; 
         }
 
@@ -1159,6 +1169,8 @@ function gameLoop() {
         break; 
 
         case STATES.GAMEOVER: 
+            level_music.pause();
+            title_music.play().catch(() => {}); 
             drawGameOver(); 
         break; 
     } 

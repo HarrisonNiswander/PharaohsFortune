@@ -867,6 +867,21 @@ function calcTime(endingTime)
 // }
 
 //
+//-----------------------------------Find Winner-----------------------------------
+//
+function findWinner()
+{
+    if(player1_score > player2_score)
+    {
+        return 1;
+    }
+
+    else{
+        return 2;
+    }
+}
+
+//
 //-----------------------------------IMAGES-----------------------------------
 //
 //set background
@@ -1218,7 +1233,38 @@ function drawGameOver() {
 
     //results for multiplayer
     else{
-        
+        ctx.textAlign = 'center'; 
+        ctx.font = 'bold 30px Papyrus'; 
+        ctx.fillText('Player 1 Jewels:     ' + player1_score, canvas.width / 5, 160);
+        ctx.fillText('Player 2 Jewels:     ' + player2_score, canvas.width / 5 * 4, 160);
+
+        ctx.fillStyle = 'rgb(255, 255, 255)'; 
+        ctx.font = 'bold 35px Papyrus';
+        ctx.fillText('Player ' + findWinner() + ' Wins!', canvas.width / 2, 215);
+        ctx.fillStyle = 'rgb(0, 0, 0)'; 
+        ctx.fillText('Player ' + findWinner() + ' Wins!', canvas.width / 2 + 3, 212);
+
+        ctx.font = 'bold 25px Papyrus'; 
+        ctx.fillText('To Play Again', canvas.width / 3, 350);
+        ctx.fillText('Press 1', canvas.width / 3, 390);
+
+        ctx.font = 'bold 25px Papyrus'; 
+        ctx.fillText('To Return to Menu', canvas.width / 3 * 2, 350);
+        ctx.fillText('Press 2', canvas.width / 3 * 2, 390);
+
+        //jewels
+        ctx.drawImage(IMG_red, 250, 240, 50, 50);
+        ctx.drawImage(IMG_green, 350, 240, 50, 50);
+        ctx.drawImage(IMG_diamond, canvas.width / 2, 240, 50, 50);
+        ctx.drawImage(IMG_purple, 550, 240, 50, 50);
+        ctx.drawImage(IMG_gold, 650, 240, 50, 50);
+
+        //players
+        ctx.drawImage(IMG_player1, canvas.width - 110, 10, 40, 70);
+        ctx.drawImage(IMG_player2, canvas.width - 60, 10, 40, 70);
+
+        ctx.font = 'bold 15px Papyrus'; 
+        ctx.fillText('Press C to view Credits', canvas.width - 90, 440);
     }
 } 
 
